@@ -20,7 +20,7 @@ class CirclesApp < Processing::App
 
   def mouse_clicked
     ring_size = random(50, 150)
-    rings << Ring.new(:x => mouseX, :y => mouseY, :width => ring_size, :height => ring_size)
+    rings << Ring.new(:x => mouseX, :y => mouseY, :width => ring_size, :height => ring_size, :length => random(24, 48).to_i)
   end
 
   def key_pressed
@@ -38,8 +38,8 @@ class CirclesApp < Processing::App
     @rings ||= []
   end
 
-  class Bubble
 
+  class Bubble
     attr_writer :x, :y
 
     def initialize(opts = {})
@@ -79,7 +79,7 @@ class CirclesApp < Processing::App
     end
 
     def length
-      @length ||= 48
+      @length || options[:length] || 48
     end
 
     def step
@@ -101,8 +101,8 @@ class CirclesApp < Processing::App
       draw
       step
     end
-
   end # of class Bubble
+
 
   class Ring
     def initialize(_opts = {})
@@ -129,6 +129,10 @@ class CirclesApp < Processing::App
       @height || options[:height] || 100
     end
 
+    def length
+      @length || options[:length] || 48
+    end
+
     def thickness
       @thickness ||= random(5,15)
     end
@@ -139,11 +143,12 @@ class CirclesApp < Processing::App
                                     :width => outer_bubble.width - thickness,
                                     :height => outer_bubble.height - thickness,
                                     :current_frame => outer_bubble.current_frame - 10,
-                                    :fill_color => color(255,255,255))
+                                    :fill_color => color(255,255,255),
+                                    :length => outer_bubble.length)
     end
 
     def outer_bubble
-      @outer_bubble ||= Bubble.new(:x => x, :y => y, :width => width, :height => height)
+      @outer_bubble ||= Bubble.new(:x => x, :y => y, :width => width, :height => height, :length => length)
     end
 
     def step
