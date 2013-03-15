@@ -1,30 +1,108 @@
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'class_options'))
+
+
 class CirclesApp < Processing::App
   
   # load_library :control_panel
 
   def setup
     size(400, 400, P3D);
-    smooth();
+    # smooth();
   end    
 
   def draw
     # clear screen
     background color(255,255,255)
 
-    # draw all painted rings
-    rings.each(&:animate)
+    pushMatrix
+      # translate to center of screen so rotation happens within the view-port
+      translate(width*0.5, height*0.5, -100)
 
-    # draw cursor
-    cursor_bubble.animate
+      # rotate 
+      rotate_y(rot_y + pull_distance_x*0.01)
+      rotate_x(rot_x + pull_distance_y*0.01)
+
+      # translate back to the original position as we are aligned with cursor actions
+      # but also incorporate the custom translate_x and translate_y position
+      translate(width*-0.5 + translate_x, height*-0.5 + translate_y, 100 + translate_z)
+
+      # draw all painted rings
+      rings.each(&:animate)
+
+      # draw cursor
+      cursor_bubble.animate
+    popMatrix   
+
+    if draw_console?
+      pushMatrix
+        translate(10, 15, 0)
+        debug_console.draw
+      popMatrix
+    end
   end
 
+  # right mouse button causes rotation dragging
+  def mouse_pressed
+    super
+
+    if mouse_button == RIGHT
+      @right_mouse_down_x = mouseX
+      @right_mouse_down_y = mouseY
+    end
+  end
+
+  def pulling?
+    mouse_button == RIGHT
+  end
+
+  def pull_distance_x
+    pulling? ? mouseX - (@right_mouse_down_x || 0) : 0.0
+  end
+
+  def pull_distance_y
+    pulling? ? mouseY - (@right_mouse_down_y || 0) : 0.0
+  end
+
+  # left mouse button paints a new ring at the current mouse position
   def mouse_clicked
+    super
     ring_size = random(50, 150)
     rings << Ring.new(:x => mouseX, :y => mouseY, :width => ring_size, :height => ring_size, :length => random(24, 48).to_i)
   end
 
   def key_pressed
+    # screenshot
     save_frame if key_code == ENTER
+
+    # rotate
+    @rot_y = rot_y + TWO_PI * 0.01 if key_code == RIGHT
+    @rot_y = rot_y - TWO_PI * 0.01 if key_code == LEFT
+    @rot_x = rot_x + TWO_PI * 0.01 if key_code == UP
+    @rot_x = rot_x - TWO_PI * 0.01 if key_code == DOWN
+
+    # translate
+    @translate_x = translate_x - 10.0 if key == 'j'
+    @translate_x = translate_x + 10.0 if key == 'l'
+    @translate_y = translate_y - 10.0 if key == 'i'
+    @translate_y = translate_y + 10.0 if key == 'k'
+    @translate_z = translate_z - 10.0 if key == '['
+    @translate_z = translate_z + 10.0 if key == ']'
+
+    # reset view-port (translation and rotation)
+    if key == '0'
+      @rot_x = nil
+      @rot_y = nil
+      @translate_x = nil
+      @translate_y = nil
+      @translate_z = nil
+    end
+
+    # toggle console on/off
+    @draw_console = !@draw_console if key_code == TAB
+  end
+
+  def draw_console?
+    @draw_console == true
   end
 
   def cursor_bubble
@@ -36,6 +114,31 @@ class CirclesApp < Processing::App
 
   def rings
     @rings ||= []
+  end
+
+
+  def rot_x
+    @rot_x || 0.0
+  end
+
+  def rot_y
+    @rot_y || 0.0
+  end
+
+  def translate_x
+    @translate_x || 0.0
+  end
+
+  def translate_y
+    @translate_y || 0.0
+  end
+
+  def translate_z
+    @translate_z || 0.0
+  end
+
+  def debug_console
+    @debug_console = Console.new(:app => self)
   end
 
 
@@ -166,6 +269,55 @@ class CirclesApp < Processing::App
       step
     end
   end # of class Ring
+
+
+  class Console
+    include ClassOptions
+
+    PREFERRED_FONTS = ['Consolas', 'Helvetica']
+
+    def app
+      options[:app]
+    end
+
+    def lines
+      [
+        "translate: #{app.translate_x.inspect}, #{app.translate_y.inspect}, #{app.translate_z.inspect}",
+        "rotation: #{app.rot_x.inspect}, #{app.rot_y.inspect}",
+        # "font: #{font_name.inspect}"
+      ]
+    end
+
+    def draw
+      text_font font
+      lines.each_with_index do |line, index|
+        text(line, 0, index*font_size*1.5)
+      end
+    end
+
+    private
+
+    def self.available_font_names
+      @available_font_names ||= PFont.list
+    end
+
+    def preferred_fonts
+      [options[:font_name], PREFERRED_FONTS].flatten.compact.uniq
+    end
+
+    def font_name
+      preferred_fonts.find{|font| self.class.available_font_names.include?(font)} || self.class.available_font_names.first
+    end
+
+    def font_size
+      options[:font_size] || 12
+    end
+
+    def font
+      @font ||= create_font(font_name, font_size)
+    end
+
+  end
 end
 
 CirclesApp.new
