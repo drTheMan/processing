@@ -1,87 +1,267 @@
 class TunnelApp < Processing::App
-  # load_library :control_panel
-  MAX_LAYERS = 10.0
 
   def setup
-    size(400, 400, P3D);
+    size(1200, 900, P3D);
     smooth();
     frame_rate(12)
-
-    stroke(color(0,0,0))
   end
 
-  def draw
 
+  def draw
+    # "remember" original position and rotation
     pushMatrix
-      translate width/2, height/2
       draw_layer(generate_layer)
     popMatrix
 
-    step_rotate
+    draw_overlay if draw_overlay?
   end
 
   def draw_layer(layer)
     pushMatrix
+      translate x, y
       rotate layer.rotation
-      fill red(layer.color), green(layer.color), blue(layer.color), random(50, 150))
-      gap = target_rotation_distance * 50
-      rect -400, gap, 800, 400
-      rect -400, -400-gap, 800, 400
+
+      stroke(color(0,0,0))
+      fill color(layer.color)
+      gap = get_gap
+      rect -(layer.width*0.5), gap, layer.width, (layer.height*0.5-gap)
+      rect -(layer.width*0.5), -gap, layer.width, -(layer.height*0.5-gap)
     popMatrix
   end
-
 
   def mouse_clicked
   end
 
   def key_pressed
+    save_frame if key_code == ENTER
+    @overlay = !@overlay if key_code == TAB
+    @target_y = target_y - 10 if key_code == UP
+    @target_y = target_y + 10 if key_code == DOWN
+    @target_x = target_x - 10 if key_code == LEFT
+    @target_x = target_x + 10 if key_code == RIGHT
+
+    @randomize_color = !@randomize_color if key == 'c'
+    @randomize_gap = !@randomize_gap if key == 'g'
+    @alpha = (@alpha || 30)+5 if key == '='
+    @alpha = (@alpha || 30)-5 if key == '-'
+    @randomize_x = !@randomize_x if key == 'x'
+    @randomize_y = !@randomize_y if key == 'y'
   end
 
   def generate_layer
-    Layer.new(:rotation => rotation, :color => random_color, :z => layers.length)
+    step_rotate
+    step_x if randomize_x?
+    step_y if randomize_y?
+
+    # pick a new color if color randomization is enabled, otherwise use existing previous color
+    @color = (randomize_color? ? nil : @color) || random_color
+    # use current rotation and color and the widht/height of the window to create a new layer
+    Layer.new(:rotation => rotation, :color => @color, :width => width, :height => height)
   end
 
+  #
+  # gap
+  #
+
+  def get_gap
+    @gap ||= random(25, 100)
+    randomize_gap? ? @gap - target_rotation_distance * 5 : @gap
+  end
+
+  def randomize_gap?
+    @randomize_gap == true
+  end
+
+  def random_gap
+    random(25, 200)
+  end
+
+  #
+  # color / alpha
+  #
+
+  def alpha
+    @alpha ||= 30
+  end
+
+  def randomize_color?
+    @randomize_color == true
+  end
+
+  # gives a random color
   def random_color
-    # colors[random(0, colors.length).to_i]
-    color(random(0,255), random(0,255), random(0,255))
+    color(random(0,255), random(0,255), random(0,255), alpha)
   end
 
-  def colors
-    @colors ||= [
-      color(255, 0, 0),
-      color(0, 255, 0),
-      color(0, 0, 255)
-    ]
-  end
+  #
+  # rotation
+  #
 
+  # gives the current rotation
   def rotation
     @rotation ||= 0
   end
 
+  # changes the current rotation, towards the target_rotation
   def step_rotate
     # set new target if no target set yet, or target is reached
-    @target_rotation = generate_target_rotation if @target_rotation.nil? || target_rotation_distance.abs < 0.1
-    # "rotate"
-    @rotation += step_rotation_distance
+    @target_rotation = generate_target_rotation  if @target_rotation.nil? || target_rotation_distance.abs < 0.1
+    # "rotate" by increasing the current roation with step_rotation_distance
+    @rotation = rotation + step_rotation_distance
   end
 
+  # gives the target rotation (and generates one if necessary)
   def target_rotation
     @target_rotation ||= generate_target_rotation
   end
 
+  # gives the rotation distance from the current rotation to the target rotation
   def target_rotation_distance
     target_rotation ? target_rotation - rotation : 0.0
   end
 
+  # gives the rotation-length of the next step towards the target_rotation (40% of rotation distance)
   def step_rotation_distance
     # @step_rotation_distance ||= PI * 0.1
     target_rotation_distance * 0.4
   end
 
+  # generate a new target_rotation (5 full turns left, or 5 full turns right from starting rotation)
   def generate_target_rotation
-    random(-TWO_PI, TWO_PI)
+    random(-(TWO_PI*5), (TWO_PI*5))
   end
 
+  #
+  # position
+  #
+
+  # gives the current position's x-coordinate
+  def x
+    @x ||= width * 0.5
+  end
+
+  def y
+    @y ||= height * 0.5
+  end
+
+  # gives a random x coordinate to move the center of the spiral to
+  def random_x
+    random(10, width-10)
+  end
+
+  def random_y
+    random(10, height-10)
+  end
+
+  def step_x
+    @target_x = random_x if @target_x.nil? || target_x_distance.abs < 1.0
+    @x = x + step_x_distance
+  end
+
+  def step_y
+    @target_y = random_y if @target_y.nil? || target_y_distance.abs < 1.0
+    @y = y + step_y_distance
+  end
+
+  def target_x
+    @target_x ||= random_x
+  end
+
+  def target_y
+    @target_y ||= random_y
+  end
+
+  def target_x_distance
+    target_x ? target_x - x : 0.0
+  end
+
+  def target_y_distance
+    target_y ? target_y - y : 0.0
+  end
+
+  def step_x_distance
+    # target_x_distance > 0 ? 0.5 : -0.5
+    target_x_distance * 0.01
+  end
+
+  def step_y_distance
+    # target_y_distance > 0 ? 0.5 : -0.5
+    target_y_distance * 0.01
+  end
+
+  def randomize_x?
+    @randomize_x == true
+  end
+
+  def randomize_y?
+    @randomize_y == true
+  end
+
+  #
+  # overlay
+  #
+
+  def draw_overlay?
+    @overlay == true
+  end
+
+  PREFERRED_FONTS = ['Consolas', 'Helvetica']
+
+  def available_font_names
+    @available_font_names ||= PFont.list
+  end
+
+  def font_name
+    PREFERRED_FONTS.find{|font| self.available_font_names.include?(font)} || self.available_font_names.first
+  end
+
+  def font_size
+    18
+  end
+
+  def overlay_font
+    @font ||= create_font(font_name, font_size)
+  end
+
+  def draw_overlay
+    # draw a vertical red lign at target_x-coordinate
+    if randomize_x?
+      stroke(color(255,0,0))
+      line(target_x, 0, target_x, height)
+    end
+
+    # draw a horizontal red line at target_y-coordinate
+    if randomize_y?
+      stroke(color(255,0,0))
+      line(0, target_y, width, target_y)
+    end
+
+    # draw a little circle at the target position
+    stroke(color(0,0,0))
+    fill(255,0,0)
+    ellipse(target_x, target_y, 10, 10)
+
+    # write info in top left corner
+    messages = [
+      "position: #{"%5.2f" % x}, #{"%5.2f" % y}",
+      "target: #{"%5.2f" % target_x}, #{"%5.2f" % target_y}",
+      "alpha: #{alpha}"
+    ]
+
+    # black background
+    no_stroke
+    fill color(0, 0, 0, 150)
+    rect(10, 10, 300, messages.length * font_size + 10)
+
+    # white text
+    fill color(255, 255, 255)
+    text_font overlay_font
+    messages.each_with_index{|msg, index| text(msg, 20, 10 + (index+1)*font_size)}
+  end
+
+
+  # a wrapper class for the layers that are drawn on top of each other
+  # (doesn't really do anything right now, only a container for the attributes)
 
   class Layer
     def initialize(_opts = {})
@@ -100,8 +280,12 @@ class TunnelApp < Processing::App
       options[:color]
     end
 
-    def z
-      options[:z]
+    def width
+      options[:width]
+    end
+
+    def height
+      options[:height]
     end
   end # of class Layer
 end
