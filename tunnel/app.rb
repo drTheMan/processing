@@ -9,7 +9,7 @@ class TunnelApp < Processing::App
   end
 
   def swirlies
-    @swirlies ||= [generate_swirly, generate_swirly]
+    @swirlies ||= [Swirly.new(:x => width*0.5, :y => height*0.5, :w => width*0.8, :h => height*0.8)]
   end
 
   def generate_swirly
@@ -25,8 +25,10 @@ class TunnelApp < Processing::App
   end
 
   def key_pressed
+    # screenshot
     save_frame if key_code == ENTER
 
+    # add new swirly to the scene
     @swirlies = swirlies + [generate_swirly] if key == ' '
 
     # @overlay = !@overlay if key_code == TAB
@@ -41,10 +43,9 @@ class TunnelApp < Processing::App
       swirly.opacity = swirly.opacity + 5 if key == '='
       swirly.opacity = swirly.opacity - 5 if key == '-'
       swirly.render = swirly.render + 1 if key == '/'
+      swirly.randomize_x = !swirly.randomize_x? if key == 'x'
+      swirly.randomize_y = !swirly.randomize_y? if key == 'y'
     end
-
-    # @randomize_x = !@randomize_x if key == 'x'
-    # @randomize_y = !@randomize_y if key == 'y'
   end
 
 
@@ -156,6 +157,20 @@ class TunnelApp < Processing::App
 
     def render
       (@render || 0) % 4
+    end
+
+    #
+    # pos
+    #
+
+    attr_writer :randomize_x, :randomize_y
+
+    def randomize_x?
+      @randomize_x.nil? ? @randomize_x = (options[:randomize_x] == true) : @randomize_x
+    end
+
+    def randomize_y?
+      @randomize_y.nil? ? @randomize_y = (options[:randomize_y] == true) : @randomize_y
     end
 
 
@@ -304,13 +319,6 @@ class TunnelApp < Processing::App
       # target_y_distance * 0.01
     end
 
-    def randomize_x?
-      options[:randomize_x] == true
-    end
-
-    def randomize_y?
-      options[:randomize_y] == true
-    end
   end # of class Swirly
 end
 
