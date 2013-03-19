@@ -1,11 +1,12 @@
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'class_options'))
+
 class TunnelApp < Processing::App
 
   def setup
-    size(1200, 900, P3D);
+    size(800, 600, P3D);
     smooth();
     frame_rate(12)
   end
-
 
   def draw
     # "remember" original position and rotation
@@ -21,12 +22,29 @@ class TunnelApp < Processing::App
       translate x, y
       rotate layer.rotation
 
-      stroke(color(0,0,0))
+      stroke(color(255,255,255))
       fill color(layer.color)
       gap = get_gap
-      rect -(layer.width*0.5), gap, layer.width, (layer.height*0.5-gap)
-      rect -(layer.width*0.5), -gap, layer.width, -(layer.height*0.5-gap)
+
+      case render
+      when 3
+        rect -(layer.width*0.5), gap, layer.width, (layer.height*0.5-gap)
+        rect -(layer.width*0.5), -gap, layer.width, -(layer.height*0.5-gap)
+      when 2
+        ellipse -(layer.width*0.5), gap, layer.width, layer.height*0.5-gap
+        ellipse -(layer.width*0.5), -gap, layer.width, -(layer.height*0.5-gap)
+      when 1
+        ellipse 0, gap+layer.height*0.25, layer.width, (layer.height*0.5)
+        ellipse 0, -gap-layer.height*0.25, layer.width, -(layer.height*0.5-gap)
+      else
+        rect -(layer.width*0.5), gap, layer.width, (layer.height*0.5-gap)
+        rect -(layer.width*0.5), -gap, layer.width, -(layer.height*0.5-gap)
+      end
     popMatrix
+  end
+
+  def render
+    (@render || 0) % 4
   end
 
   def mouse_clicked
@@ -46,6 +64,7 @@ class TunnelApp < Processing::App
     @alpha = (@alpha || 30)-5 if key == '-'
     @randomize_x = !@randomize_x if key == 'x'
     @randomize_y = !@randomize_y if key == 'y'
+    @render = (@render || 0) + 1 if key == '/'
   end
 
   def generate_layer
@@ -70,10 +89,6 @@ class TunnelApp < Processing::App
 
   def randomize_gap?
     @randomize_gap == true
-  end
-
-  def random_gap
-    random(25, 200)
   end
 
   #
@@ -123,12 +138,12 @@ class TunnelApp < Processing::App
   # gives the rotation-length of the next step towards the target_rotation (40% of rotation distance)
   def step_rotation_distance
     # @step_rotation_distance ||= PI * 0.1
-    target_rotation_distance * 0.4
+    target_rotation_distance * 0.2
   end
 
   # generate a new target_rotation (5 full turns left, or 5 full turns right from starting rotation)
   def generate_target_rotation
-    random(-(TWO_PI*5), (TWO_PI*5))
+    random(-(TWO_PI*10), (TWO_PI*10))
   end
 
   #
@@ -154,12 +169,12 @@ class TunnelApp < Processing::App
   end
 
   def step_x
-    @target_x = random_x if @target_x.nil? || target_x_distance.abs < 1.0
+    @target_x = random_x if @target_x.nil? || target_x_distance.abs <= 3.0
     @x = x + step_x_distance
   end
 
   def step_y
-    @target_y = random_y if @target_y.nil? || target_y_distance.abs < 1.0
+    @target_y = random_y if @target_y.nil? || target_y_distance.abs <= 3.0
     @y = y + step_y_distance
   end
 
@@ -180,13 +195,13 @@ class TunnelApp < Processing::App
   end
 
   def step_x_distance
-    # target_x_distance > 0 ? 0.5 : -0.5
-    target_x_distance * 0.01
+    target_x_distance > 0 ? 3 : -3
+    # target_x_distance * 0.01
   end
 
   def step_y_distance
-    # target_y_distance > 0 ? 0.5 : -0.5
-    target_y_distance * 0.01
+    target_y_distance > 0 ? 3 : -3
+    # target_y_distance * 0.01
   end
 
   def randomize_x?
@@ -264,13 +279,7 @@ class TunnelApp < Processing::App
   # (doesn't really do anything right now, only a container for the attributes)
 
   class Layer
-    def initialize(_opts = {})
-      @options = _opts
-    end
-
-    def options
-      @options || {}
-    end
+    include ClassOptions
 
     def rotation
       options[:rotation]
@@ -288,6 +297,19 @@ class TunnelApp < Processing::App
       options[:height]
     end
   end # of class Layer
+
+
+  class Swirly
+    include ClassOptions
+
+    def draw
+      # "remember" original position and rotation
+      pushMatrix
+        draw_layer(generate_layer)
+      popMatrix
+    end
+
+  end # of class Swirly
 end
 
 TunnelApp.new
