@@ -5,6 +5,7 @@ GEM
     ruby-processing (1.0.11)
 
 PLATFORMS
+  java
   ruby
 
 DEPENDENCIES
