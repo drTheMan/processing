@@ -1,3 +1,9 @@
+GIT
+  remote: git://github.com/junegunn/perlin_noise.git
+  revision: e1f841a638ce5f6e288593916819a5fb68e3cb1b
+  specs:
+    perlin_noise (0.1.2)
+
 GEM
   remote: http://rubygems.org/
   remote: http://gems.rubyforge.org/
@@ -9,4 +15,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  perlin_noise!
   ruby-processing
