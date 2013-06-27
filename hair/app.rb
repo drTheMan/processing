@@ -65,14 +65,57 @@ def sketch
   return @sketch    
 end
 
-def draw
-  return exit if !sketch
-  sketch.draw
-  saveFrame("######-ttl5000-finished#{sketch.finished_points_count}.png") if frameCount % 50 == 0
-  puts "Sketch: #{(@sketch_index || 0)+1}/#{SETTINGS.length} - Progress: #{sketch.finished_points_count}/#{sketch.total_points}"
+def drawSettingSketches
+  # return exit if !sketch
+  # sketch.draw
+  
+  # puts "Sketch: #{(@sketch_index || 0)+1}/#{SETTINGS.length} - Progress: #{sketch.finished_points_count}/#{sketch.total_points}"
 end
 
 
+def random_color
+  color(rand(255), rand(255), rand(255))
+end
+
+def sketchA
+  @sketchA ||= HairSketch.new(:total_points => 2000, :color => random_color)
+end
+
+def sketchB
+  @sketchB ||= HairSketch.new(sketchA.options.merge(:color => random_color, :noise => sketchA.noise, :noise_offset_y => 0.2))
+end
+
+def sketches
+  [sketchA, sketchB]
+end
+
+def drawCombo
+  sketches.each do |sketch|
+    sketch.draw
+  end
+
+  saveFrame("hair-######-#{sketchA.finished_points_count+sketchB.finished_points_count}paths.png") if (frameCount+100) % 500 == 0
+end
+
+
+def drawAnimated
+  @animSketch = sketchA if !@animSketch
+  @count ||= 1
+
+  if @animSketch.finished?
+    saveFrame("hair-######-offset#{@animSketch.options[:pace_shift] || 0}.png")
+    clearCanvas
+    @animSketch = HairSketch.new(@animSketch.options.merge(:pace_shift => (@animSketch.options[:pace_shift] || 0)+0.1, :noise => @animSketch.noise))
+    @count += 1
+  end
+
+  @animSketch.draw
+  puts "Sketch: #{@count}, Paths finished: #{@animSketch.finished_points_count}"
+end
+
+def draw
+  drawAnimated
+end
 
 def clearCanvas
   background(255)
@@ -82,9 +125,12 @@ def keyPressed
   if key_code == ENTER
     clearCanvas
     sketch.reset_points
+    sketches.each(&:reset_points)
   end
 
   sketch.add_points if key == 'm'
+
+  saveFrame("hair-f######.png") if key == 'p'
 end
 
 
@@ -101,7 +147,7 @@ class HairSketch
   end
 
   def noise
-    @noise_cache ||= Perlin::Noise.new 2, :curve => Perlin::Curve::CUBIC
+    @noise_cache ||= (options[:noise] || Perlin::Noise.new(2, :curve => Perlin::Curve::CUBIC))
   end
 
   def step_size
@@ -110,14 +156,23 @@ class HairSketch
 
   def add_point
     @points ||= []
-    @points << Point.new(:x => rand(width), :y => rand(height), :max_speed => 1, :factor => options[:factor], :cycle => options[:cycle])
+    @points << Point.new(options.merge(
+      :x => rand(width),
+      :y => rand(height),
+      :max_speed => 1))
+      # :factor => options[:factor],
+      # :cycle => options[:cycle],
+      # :color => options[:color],
+      # :noise_factor => options[:noise_factor],
+      # :noise_offset => options[:noise_offset],
+      # :noise_offset_x => options[:noise_offset_x],
+      # :noise_offset_y => options[:noise_offset_y]))
   end
 
   def add_points(amount = nil)
     (amount || step_size).times do
       add_point
     end
-
   end
 
   def reset_points
@@ -211,14 +266,58 @@ class Point
     options[:max_speed] || MAX_SPEED
   end
 
+  def clr
+    options[:color] || 0
+  end
+
   def update n2d
     step n2d
     draw
   end
 
+  def noise_factor
+    options[:noise_factor] || 0.01
+  end
+
+  def noise_offset_x
+    options[:noise_offset_x] || noise_offset
+  end
+
+  def noise_offset_y
+    options[:noise_offset_y] || noise_offset
+  end
+
+  def noise_offset
+    options[:noise_offset] || 0
+  end
+
+  def cycle_offset
+    options[:cycle_offset] || 0
+  end
+
+  def cycle_offset_x
+    options[:cycle_offset_x] || cycle_offset
+  end
+
+  def cycle_offset_y
+    options[:cycle_offset_y] || cycle_offset
+  end
+
+  def nx
+    x * noise_factor + noise_offset_x
+  end
+
+  def ny
+    y * noise_factor + noise_offset_y
+  end
+
+  def noise_value(n2d)
+    options[:pace_shift] ? ((n2d[nx, ny] + options[:pace_shift]) % 1) : n2d[nx, ny]
+  end
+
   def step n2d
-    @xv = cos(n2d[x * 0.01, y * 0.01] * (options[:cycle] || TWO_PI)) * (options[:factor] || 1)
-    @yv = sin(n2d[x * 0.01, y * 0.01] * (options[:cycle] || TWO_PI)) * (options[:factor] || 1)
+    @xv = cos(noise_value(n2d) * (options[:cycle] || TWO_PI) + cycle_offset_x) * (options[:factor] || 1)
+    @yv = sin(noise_value(n2d) * (options[:cycle] || TWO_PI) + cycle_offset_y) * (options[:factor] || 1)
 
     @xv = max_speed if xv > max_speed
     @xv = -max_speed if xv < -max_speed
@@ -230,7 +329,7 @@ class Point
   end
 
   def draw
-    stroke(0, 16)
+    stroke(clr, 16)
     line(x + xv, y + yv, x, y )
   end
 
