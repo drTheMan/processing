@@ -63,7 +63,7 @@ class TunnelApp < Processing::App
     end
 
     def unfinished_vertices
-      vertices.find_all{|vertex| vertex.x > 0}
+      vertices.find_all{|vertex| vertex.x >= 0 && vertex.y >= 0 && vertex.x <= object.width && vertex.y <= object.height}
     end
 
     def done?
@@ -73,7 +73,7 @@ class TunnelApp < Processing::App
     # options
 
     def vertex_count
-      @vertex_count ||= options[:vertex_count] || random(2, 10)
+      @vertex_count ||= options[:vertex_count] || random(2, 25)
       return @vertex_count < 2 ? 2 : @vertex_count
     end
 
@@ -119,7 +119,7 @@ class TunnelApp < Processing::App
     def move_left
       # @x = random(0, x - 1)
       @x = x - random(100)
-      @x = 0 if @x < 0
+      # @x = 0 if @x < 0
     end
 
   end # of class Vertex
