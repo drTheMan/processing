@@ -1,9 +1,10 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'class_options'))
-
+require 'rubygems'
+require 'bundler/setup'
+require 'sketch_control/control_panel'
 
 class CirclesApp < Processing::App
-  
-  load_library :control_panel
+  # load_library :control_panel
 
   def setup
     size(400, 400, P3D);
@@ -12,7 +13,7 @@ class CirclesApp < Processing::App
   end    
 
   def sketch_control
-    @sketch_control ||= SketchControl.new
+    @sketch_control ||= SketchController.new
   end
 
   def bgcolor
@@ -329,11 +330,16 @@ class CirclesApp < Processing::App
   end
 end
 
-class SketchControl
+class SketchController
   include Processing::Proxy
+  # Processing::App.send :include, ControlPanel::InstanceMethods
+  include SketchControl::ControlPanel::InstanceMethods
+
+
 
   attr_reader :options
   attr_reader :bgcolorr
+
   def initialize(_opts = {})
     @options = _opts || {}
     setup_controls
