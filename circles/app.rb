@@ -3,16 +3,25 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'class_o
 
 class CirclesApp < Processing::App
   
-  # load_library :control_panel
+  load_library :control_panel
 
   def setup
     size(400, 400, P3D);
+    sketch_control
     # smooth();
   end    
 
+  def sketch_control
+    @sketch_control ||= SketchControl.new
+  end
+
+  def bgcolor
+    color(sketch_control.bgcolorr.to_i,255,255)
+  end
+
   def draw
     # clear screen
-    background color(255,255,255)
+    background bgcolor
 
     pushMatrix
       # translate to center of screen so rotation happens within the view-port
@@ -320,4 +329,24 @@ class CirclesApp < Processing::App
   end
 end
 
+class SketchControl
+  include Processing::Proxy
+
+  attr_reader :options
+  attr_reader :bgcolorr
+  def initialize(_opts = {})
+    @options = _opts || {}
+    setup_controls
+  end
+
+  def setup_controls
+    control_panel do |c|
+      c.title = "Control Panel"
+      # this automatically writes to the processing's main app class instance variable...
+      c.slider :bgcolorr, 0..255, 255 do |value|
+        @bgcolorr = value 
+      end
+    end
+  end
+end
 CirclesApp.new
