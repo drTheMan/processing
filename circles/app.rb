@@ -349,11 +349,7 @@ class SketchController
       c.title = "Sketch Controls Panel"
 
       # this automatically writes to the processing's main app class instance variable...
-      c.slider :max => 255 do |value|
-
-        @bgcolorr = value
-      end
-
+      c.slider :label => :bgcolorr, :max => 255
       c.rgb :background do |value|
         @bgcolor = value #puts "Sketch got: #{value} from background slider"
       end
