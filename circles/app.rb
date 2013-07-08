@@ -1,7 +1,9 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'class_options'))
 require 'rubygems'
 require 'bundler/setup'
+require 'sketch_control'
 require 'sketch_control/control_panel'
+
 
 class CirclesApp < Processing::App
   # load_library :control_panel
@@ -17,7 +19,7 @@ class CirclesApp < Processing::App
   end
 
   def bgcolor
-    color(sketch_control.bgcolorr.to_i,255,255)
+    sketch_control.bgcolor || color(sketch_control.bgcolorr.to_i,255,255)
   end
 
   def draw
@@ -332,6 +334,35 @@ end
 
 class SketchController
   include Processing::Proxy
+  include SketchControl
+
+  attr_reader :options
+  attr_reader :bgcolor, :bgcolorr
+
+  def initialize(_opts = {})
+    @options = _opts || {}
+    setup_controls
+  end
+
+  def setup_controls
+    sketch_controls do |c|
+      c.title = "Sketch Controls Panel"
+
+      # this automatically writes to the processing's main app class instance variable...
+      c.slider :max => 255 do |value|
+
+        @bgcolorr = value
+      end
+
+      c.rgb :background do |value|
+        @bgcolor = value #puts "Sketch got: #{value} from background slider"
+      end
+    end
+  end
+end
+
+class SketchController1
+  include Processing::Proxy
   # Processing::App.send :include, ControlPanel::InstanceMethods
   include SketchControl::ControlPanel::InstanceMethods
 
@@ -348,10 +379,13 @@ class SketchController
   def setup_controls
     control_panel do |c|
       c.title = "Control Panel"
+      
       # this automatically writes to the processing's main app class instance variable...
       c.slider :bgcolorr, 0..255, 255 do |value|
         @bgcolorr = value 
       end
+
+      # c.color_chooser :background_color
     end
   end
 end
