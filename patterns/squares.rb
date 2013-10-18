@@ -21,6 +21,10 @@ class CirclesApp < Processing::App
     # smooth();
   end    
 
+  def key_pressed
+    # screenshot
+    save_frame if key_code == ENTER
+  end
   def sketch_control
     @sketch_control ||= SketchController.new
   end
