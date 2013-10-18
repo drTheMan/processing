@@ -3,13 +3,13 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'class_o
 class TunnelApp < Processing::App
 
   def setup
-    size(800, 600, P3D);
+    size(1400, 900, P3D);
     smooth();
     frame_rate(12)
   end
 
   def swirlies
-    @swirlies ||= [Swirly.new(:x => width*0.5, :y => height*0.5, :w => width*0.8, :h => height*0.8)]
+    @swirlies ||= [Swirly.new(:x => width*0.5, :y => height*0.5, :w => width, :h => height)]
   end
 
   def generate_swirly
@@ -17,6 +17,11 @@ class TunnelApp < Processing::App
   end
 
   def draw
+    if @reset
+      background(color(255,255,255))
+      @reset = false
+    end
+
     swirlies.each(&:animate)
     # draw_overlay if draw_overlay?
   end
@@ -32,6 +37,7 @@ class TunnelApp < Processing::App
     @swirlies = swirlies + [generate_swirly] if key == ' '
 
     # @overlay = !@overlay if key_code == TAB
+    @reset = true if key_code == TAB
     # @target_y = target_y - 10 if key_code == UP
     # @target_y = target_y + 10 if key_code == DOWN
     # @target_x = target_x - 10 if key_code == LEFT
