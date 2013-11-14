@@ -25,6 +25,7 @@ class CirclesApp < Processing::App
     # screenshot
     save_frame if key_code == ENTER
     @paused = (@paused != true) if key == ' '
+    @variation = @variation.to_i + 1 if key == '/'
   end
 
   def sketch_control
@@ -39,35 +40,64 @@ class CirclesApp < Processing::App
     sketch_control.strokecolor || color(0,0,0)
   end
 
+  def shapeColor
+    sketch_control.shapecolor || color(255,255,255)
+  end
+
   def draw
     if @paused != true
       background bgcolor
-      drawSquares
+      drawPattern
     end
   end
 
-  def squareWidth
-    sketch_control.squarewidth.to_i < 1 ? 30 : sketch_control.squarewidth.to_i
+  def shapeWidth
+    sketch_control.shapeWidth.to_i < 1 ? 30 : sketch_control.shapeWidth.to_i
   end
 
-  def squareHeight
-    sketch_control.squareheight.to_i < 1 ? 30 : sketch_control.squareheight.to_i
+  def shapeHeight
+    sketch_control.shapeHeight.to_i < 1 ? 30 : sketch_control.shapeHeight.to_i
   end
 
-  def squareoffset
-    sketch_control.squareoffset.to_i
+  def shapeOffset
+    sketch_control.shapeOffset.to_i
   end
 
-  def drawSquare(x,y)
-    no_fill
+  def shapeName
+    shapes = [:rectangle, :circle, :triangle, :triangle2]
+    return shapes[@variation.to_i % shapes.length]
+  end
+
+  def drawPattern
+    # no_fill
+    fill(shapeColor)
     stroke(strokecolor)
 
-    rect(x - random(squareoffset), y - random(squareoffset), squareWidth + random(squareoffset), squareHeight + random(squareoffset))
-  end
-  def drawSquares
-    0.upto(height / squareHeight) do |y|
-      0.upto(width / squareWidth) do |x|
-        drawSquare(x * squareWidth, y * squareHeight)
+    0.upto(height / shapeHeight) do |row|
+      0.upto(width / shapeWidth) do |col|
+        x = col * shapeWidth - random(shapeOffset)
+        y = row * shapeHeight - random(shapeOffset)
+        w = shapeWidth + random(shapeOffset)
+        h = shapeHeight + random(shapeOffset)
+
+        if shapeName == :rectangle
+          rect(x, y, w, h)
+        elsif shapeName == :circle
+          ellipse(x, y, w, h)
+        elsif shapeName == :triangle
+          triangle(x,y, x+w,y+h, x,y+h)
+          x = col * shapeWidth - random(shapeOffset)
+          y = row * shapeHeight - random(shapeOffset)
+          w = shapeWidth + random(shapeOffset)
+          h = shapeHeight + random(shapeOffset)
+          triangle(x,y, x+w,y+h, x+w,y)
+        elsif shapeName == :triangle2
+          if col.odd?
+            triangle(x,y, x+w,y,  x+w*0.5,y+h)
+          else
+            triangle(x,y+h, x+w,y+h,  x+w*0.5,y)
+          end
+        end
       end
     end
   end
@@ -78,7 +108,7 @@ class SketchController
   include SketchControl
 
   attr_reader :options
-  attr_reader :bgcolor, :strokecolor, :squarewidth, :squareoffset, :squareheight
+  attr_reader :bgcolor, :strokecolor, :shapecolor, :shapeWidth, :shapeOffset, :shapeHeight
 
   def initialize(_opts = {})
     @options = _opts || {}
@@ -89,9 +119,9 @@ class SketchController
     sketch_controls do |c|
       c.title = "Sketch Controls Panel"
 
-      c.slider :label => :squarewidth, :min => 0, :max => 300
-      c.slider :label => :squareheight, :min => 0, :max => 300
-      c.slider :label => :squareoffset, :min => 0, :max => 300
+      c.slider :label => :shapeWidth, :min => 0, :max => 300
+      c.slider :label => :shapeHeight, :min => 0, :max => 300
+      c.slider :label => :shapeOffset, :min => 0, :max => 300
 
 
       c.rgb :background do |value|
@@ -102,6 +132,9 @@ class SketchController
         @strokecolor = value #puts "Sketch got: #{value} from background slider"
       end
 
+      c.rgb :shape do |value|
+        @shapecolor = value #puts "Sketch got: #{value} from background slider"
+      end
     end
   end
 end
