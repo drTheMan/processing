@@ -24,6 +24,7 @@ class CirclesApp < Processing::App
   def key_pressed
     # screenshot
     save_frame if key_code == ENTER
+    @paused = (@paused != true) if key == ' '
   end
 
   def sketch_control
@@ -39,8 +40,10 @@ class CirclesApp < Processing::App
   end
 
   def draw
-    background bgcolor
-    drawSquares
+    if @paused != true
+      background bgcolor
+      drawSquares
+    end
   end
 
   def squareWidth
