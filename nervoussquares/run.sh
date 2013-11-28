@@ -1,0 +1,1 @@
+rp5 run $(dirname ${BASH_SOURCE[0]})/app.rb
