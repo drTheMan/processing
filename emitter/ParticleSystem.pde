@@ -3,7 +3,7 @@
 // An ArrayList is used to manage the list of Particles 
 
 class ParticleSystem {
-  ArrayList<Particle> particles;
+  ArrayList<ObjectParticle> particles;
   PVector origin;
 
   ParticleSystem(){
@@ -16,11 +16,11 @@ class ParticleSystem {
 
   void init(PVector location){
     origin = location.get();
-    particles = new ArrayList<Particle>();
+    particles = new ArrayList<ObjectParticle>();
   }
 
   void addParticle() {
-    particles.add(new Particle(origin));
+    particles.add(new ObjectParticle(origin));
   }
 
   void run() {
