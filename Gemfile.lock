@@ -4,10 +4,17 @@ GIT
   specs:
     perlin_noise (0.1.2)
 
+PATH
+  remote: ../sketch-control
+  specs:
+    sketch-control (0.0.1)
+      methadone
+
 GEM
   remote: http://rubygems.org/
-  remote: http://gems.rubyforge.org/
   specs:
+    methadone (1.3.0)
+      bundler
     ruby-processing (1.0.11)
 
 PLATFORMS
@@ -17,3 +24,4 @@ PLATFORMS
 DEPENDENCIES
   perlin_noise!
   ruby-processing
+  sketch-control!

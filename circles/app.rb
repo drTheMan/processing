@@ -1,9 +1,12 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'class_options'))
+require 'rubygems'
+require 'bundler/setup'
+require 'sketch_control'
+require 'sketch_control/control_panel'
 
 
 class CirclesApp < Processing::App
-  
-  load_library :control_panel
+  # load_library :control_panel
 
   def setup
     size(400, 400, P3D);
@@ -12,11 +15,11 @@ class CirclesApp < Processing::App
   end    
 
   def sketch_control
-    @sketch_control ||= SketchControl.new
+    @sketch_control ||= SketchController.new
   end
 
   def bgcolor
-    color(sketch_control.bgcolorr.to_i,255,255)
+    sketch_control.bgcolor || color(255,255,255)
   end
 
   def draw
@@ -115,7 +118,7 @@ class CirclesApp < Processing::App
   end
 
   def cursor_bubble
-    @cursor_bubble ||= Bubble.new
+    @cursor_bubble ||= Bubble.new(:fill_color => color(0,0,0))
     @cursor_bubble.x = mouseX
     @cursor_bubble.y = mouseY
     return @cursor_bubble
@@ -179,15 +182,15 @@ class CirclesApp < Processing::App
     end
 
     def width
-      options[:width] || @width ||= 100
+      (options[:width] || @width ||= 100) + $app.sketch_control.width_increase.to_i
     end
 
     def height
-      options[:height] || @height ||= 100
+      (options[:height] || @height ||= 100) + $app.sketch_control.height_increase.to_i
     end
 
     def fill_color
-      @fill_color ||= options[:fill_color] || color(0, 0, 0)
+      options[:fill_color] || $app.bgcolor #color(0, 0, 0)
     end
 
     def length
@@ -255,12 +258,12 @@ class CirclesApp < Processing::App
                                     :width => outer_bubble.width - thickness,
                                     :height => outer_bubble.height - thickness,
                                     :current_frame => outer_bubble.current_frame - 10,
-                                    :fill_color => color(255,255,255),
+                                    #:fill_color => $app.bgcolor, #color(255,255,255),
                                     :length => outer_bubble.length)
     end
 
     def outer_bubble
-      @outer_bubble ||= Bubble.new(:x => x, :y => y, :width => width, :height => height, :length => length)
+      @outer_bubble ||= Bubble.new(:x => x, :y => y, :width => width, :height => height, :length => length, :fill_color => color(0,0,0))
     end
 
     def step
@@ -329,24 +332,30 @@ class CirclesApp < Processing::App
   end
 end
 
-class SketchControl
+class SketchController
   include Processing::Proxy
+  include SketchControl
 
   attr_reader :options
-  attr_reader :bgcolorr
+  attr_reader :bgcolor, :width_increase, :height_increase
+
   def initialize(_opts = {})
     @options = _opts || {}
     setup_controls
   end
 
   def setup_controls
-    control_panel do |c|
-      c.title = "Control Panel"
-      # this automatically writes to the processing's main app class instance variable...
-      c.slider :bgcolorr, 0..255, 255 do |value|
-        @bgcolorr = value 
+    sketch_controls do |c|
+      c.title = "Sketch Controls Panel"
+
+      c.rgb :background do |value|
+        @bgcolor = value #puts "Sketch got: #{value} from background slider"
       end
+
+      c.slider :label => :width_increase, :min => -500, :max => 500
+      c.slider :label => :height_increase, :min => -500, :max => 500
     end
   end
 end
+
 CirclesApp.new
