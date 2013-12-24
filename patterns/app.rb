@@ -64,8 +64,16 @@ class CirclesApp < Processing::App
   end
 
   def shapeName
-    shapes = [:rectangle, :circle, :triangle, :triangle2]
+    shapes = [:rectangle, :circle, :triangle, :triangle2, :typo1, :typo2]
     return shapes[@variation.to_i % shapes.length]
+  end
+
+  def rotateAngle
+    sketch_control.rotation.to_i / 360.0 * TWO_PI
+  end
+
+  def rotateVariationAngle
+    sketch_control.rotateVariation.to_i / 360.0 * TWO_PI
   end
 
   def drawPattern
@@ -80,24 +88,43 @@ class CirclesApp < Processing::App
         w = shapeWidth + random(shapeOffset)
         h = shapeHeight + random(shapeOffset)
 
-        if shapeName == :rectangle
-          rect(x, y, w, h)
-        elsif shapeName == :circle
-          ellipse(x, y, w, h)
-        elsif shapeName == :triangle
-          triangle(x,y, x+w,y+h, x,y+h)
-          x = col * shapeWidth - random(shapeOffset)
-          y = row * shapeHeight - random(shapeOffset)
-          w = shapeWidth + random(shapeOffset)
-          h = shapeHeight + random(shapeOffset)
-          triangle(x,y, x+w,y+h, x+w,y)
-        elsif shapeName == :triangle2
-          if col.odd?
-            triangle(x,y, x+w,y,  x+w*0.5,y+h)
-          else
-            triangle(x,y+h, x+w,y+h,  x+w*0.5,y)
+        pushMatrix
+          translate(x,y)
+          rotate(rotateAngle+random(rotateVariationAngle))
+          
+          if shapeName == :rectangle
+            rect(0,0 , w, h)
+          elsif shapeName == :circle
+            ellipse(0,0, w, h)
+          elsif shapeName == :triangle
+            triangle(0,0, w, h, 0, h)
+            x = random(shapeOffset)
+            y = random(shapeOffset)
+            w = shapeWidth + random(shapeOffset)
+            h = shapeHeight + random(shapeOffset)
+            triangle(x,y, x+w,y+h, x+w,y)
+          elsif shapeName == :triangle2
+            if col.odd?
+              triangle(0,0, w,0,  w*0.5,h)
+            else
+              triangle(0,h, w,h,  w*0.5,0)
+            end
+          elsif shapeName == :typo1
+            if col.odd?
+              triangle(0,0, w,y,  w*0.5,h)
+            else
+              triangle(0,h, w,h,  w*0.5,0)
+            end
+          elsif shapeName == :typo2
+            triangle(0,0, w, h, x, h)
+            x = random(shapeOffset)
+            y = random(shapeOffset)
+            w = shapeWidth + random(shapeOffset)
+            h = shapeHeight + random(shapeOffset)
+            triangle(x,y, x+w,y+h, x+w,y)
           end
-        end
+
+        popMatrix
       end
     end
   end
@@ -108,7 +135,7 @@ class SketchController
   include SketchControl
 
   attr_reader :options
-  attr_reader :bgcolor, :strokecolor, :shapecolor, :shapeWidth, :shapeOffset, :shapeHeight
+  attr_reader :bgcolor, :strokecolor, :shapecolor, :shapeWidth, :shapeOffset, :shapeHeight, :rotation, :rotateVariation
 
   def initialize(_opts = {})
     @options = _opts || {}
@@ -122,7 +149,8 @@ class SketchController
       c.slider :label => :shapeWidth, :min => 0, :max => 300
       c.slider :label => :shapeHeight, :min => 0, :max => 300
       c.slider :label => :shapeOffset, :min => 0, :max => 300
-
+      c.slider :label => :rotation, :min => 0, :max => 360
+      c.slider :label => :rotateVariation, :min => 0, :max => 360
 
       c.rgb :background do |value|
         @bgcolor = value #puts "Sketch got: #{value} from background slider"
