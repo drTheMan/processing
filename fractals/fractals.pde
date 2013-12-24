@@ -1,16 +1,39 @@
 void setup() {
   size(640, 360);
+  
+  frameRate(12);
+  background(255, 0 ,0);
+
+  drawSquarer(new PVector(width, height));
+}
+
+void mouseClicked(){
+  drawSquarer(new PVector(width, height));
 }
 
 void draw() {
-  background(0);
-  frameRate(30);
-  
   // Let's pick an angle 0 to 90 degrees based on the mouse position
-  new Brancher((mouseX / (float) width) * 90f, new PVector(width/2, height), new PVector(0, -120)).draw();
-  new Brancher((mouseX / (float) width) * 90f, new PVector(width/2, 0), new PVector(0, 120)).draw();
-  new Brancher((mouseX / (float) width) * 90f, new PVector(0, height/2), new PVector(120, 0)).draw();
-  new Brancher((mouseX / (float) width) * 90f, new PVector(width, height/2), new PVector(-120, 0)).draw(); 
+  //new Brancher((mouseX / (float) width) * 90f, new PVector(width/2, height), new PVector(0, -120)).draw();
+}
+
+void drawSquarer(PVector d){
+  if(d.x < 5 || d.y < 5) return;
+
+  for(int i=0; i<5; i++){
+    //strokeWeight(1);//(d.x < d.y ? d.x : d.y) * 0.1);
+    PVector new_d = new PVector(d.x*random(0.3, 0.5), d.y*random(0.3, 0.5));
+
+    pushMatrix();
+      translate(random(d.x-new_d.x),random(d.y-new_d.y));
+      int r = (int)random(4);
+      if(r == 0) fill(255);
+      if(r==1) fill(255, 0, 0);
+      if(r == 2) fill(0, 0, 255);
+      if(r == 3) fill(255, 255, 0);
+      rect(0,0, d.x, d.y);
+      drawSquarer(new_d);
+    popMatrix();
+  }
 }
 
 class Brancher{
