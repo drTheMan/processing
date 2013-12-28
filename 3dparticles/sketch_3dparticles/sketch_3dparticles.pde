@@ -12,7 +12,7 @@ ParticleSystem ps;
 
 void setup() {
   size(640,360, P3D);
-  ps = new ParticleSystem(new PVector(width/2,height*0.9, 0));
+  ps = new ParticleSystem(new PVector(width/2,height*0.9, 500));
   fill(200, 200, 200, 100);
 //  noFill();
 }

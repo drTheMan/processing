@@ -11,7 +11,9 @@ class ParticleSystem {
   }
 
   void addParticle() {
-    particles.add(new Particle(origin));
+    PVector location = origin.get();
+    location.add(new PVector(random(-width, width), random(30)));
+    particles.add(new Particle(location));
   }
 
   void run() {

@@ -10,9 +10,9 @@ class Particle {
   Particle(PVector l) {
     acceleration = new PVector(0,0,0); //new PVector(0,0.05);
     velocity = new PVector(0,0,-20); // new PVector(random(-1,1),random(-2,0));
-    location = l.get();
-    location.add(new PVector(random(width/-2, width/2), random(30)));
-    lifespan = 255.0;
+    location = l;
+    
+    lifespan = 1000.0;
     panel = new Panel(location.get(), new PVector(random(50, 300), random(10, 20), random(50, 300)));
   }
 
