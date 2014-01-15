@@ -45,7 +45,8 @@ class PyramidApp < Processing::App
       :squareSize => sketch_control.squareSize,
       :deltaZ => sketch_control.deltaZ,
       :spacing => sketch_control.spacing,
-      :layerRotation => sketch_control.layerRotation
+      :layerRotation => sketch_control.layerRotation,
+      :shape => sketch_control.shape
       )]
   end
 
@@ -141,26 +142,47 @@ class PyramidApp < Processing::App
         translate(width/2, height/2)
         rotate(options[:layerRotation] * index) if options[:layerRotation]
         translate(-bounding_width * 0.5, -bounding_width * 0.5, zPos)
-        # rect(0,0, bounding_width, bounding_height)
-      
+
         0.upto(rows-1) do |row|
           0.upto(cols-1) do |col|
-            x = (squareWidth + squareSpacing) * col
-            y = (squareHeight + squareSpacing) * row
-            f = fatness
-            f = squareWidth if squareWidth < f
-            f = squareHeight if squareHeight < f
-
-            fill(0,0,0)
-            rect(x, y, squareWidth, squareHeight)
-            fill(255,255,255)
-            rect(x+f, y+f, squareWidth-f*2, squareHeight-f*2)
+            if (options[:shape] || 1) == 1
+              drawSquare(row, col)
+            elsif options[:shape].to_i == 2
+              drawCircle(row, col)
+            end
           end
         end
 
       popMatrix
     end
+
+    def drawSquare(row, col)
+      x = (squareWidth + squareSpacing) * col
+      y = (squareHeight + squareSpacing) * row
+      f = fatness
+      f = squareWidth if squareWidth < f
+      f = squareHeight if squareHeight < f
+
+      fill(0,0,0)
+      rect(x, y, squareWidth, squareHeight)
+      fill(255,255,255)
+      rect(x+f, y+f, squareWidth-f*2, squareHeight-f*2)
+    end
+
+    def drawCircle(row, col)
+      x = (squareWidth + squareSpacing) * col + squareWidth/2
+      y = (squareHeight + squareSpacing) * row + squareHeight/2
+      f = fatness
+      f = squareWidth if squareWidth < f
+      f = squareHeight if squareHeight < f
+
+      fill(0,0,0)
+      ellipse(x, y, squareWidth, squareHeight)
+      fill(255,255,255)
+      ellipse(x, y, squareWidth-f*2, squareHeight-f*2)
+    end
   end
+
 
 end
 
@@ -171,7 +193,7 @@ class SketchController
   include SketchControl
 
   attr_reader :options
-  attr_reader :bgcolor, :fatness, :squareSize, :layer_count, :deltaZ, :spacing, :layerRotation
+  attr_reader :bgcolor, :fatness, :squareSize, :layer_count, :deltaZ, :spacing, :layerRotation, :shape
 
   def initialize(_opts = {})
     @options = _opts || {}
@@ -182,6 +204,7 @@ class SketchController
     sketch_controls do |c|
       c.title = "Sketch Controls Panel"
 
+      c.slider :label => :shape, :min => 1, :max => 2
       c.slider :label => :layer_count, :min => 1, :max => 50
       c.slider :label => :fatness, :min => 0, :max => 300
       c.slider :label => :squareSize, :min => 0, :max => 500
