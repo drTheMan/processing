@@ -24,7 +24,8 @@ class PyramidApp < Processing::App
 
   def key_pressed
     # screenshot
-    save_frame if key_code == ENTER
+    # save_frame if key_code == ENTER
+    saveFrame("line-###.png") if key_code == ENTER
     @paused = (@paused != true) if key == ' '
     @variation = @variation.to_i + 1 if key == '/'
   end
@@ -43,7 +44,8 @@ class PyramidApp < Processing::App
       :fatness => sketch_control.fatness,
       :squareSize => sketch_control.squareSize,
       :deltaZ => sketch_control.deltaZ,
-      :spacing => sketch_control.spacing
+      :spacing => sketch_control.spacing,
+      :layerRotation => sketch_control.layerRotation
       )]
   end
 
@@ -90,6 +92,10 @@ class PyramidApp < Processing::App
       options[:layer] || 1
     end
 
+    def index
+      layer - 1
+    end
+
     def cols
       options[:cols] || layer
     end
@@ -107,7 +113,7 @@ class PyramidApp < Processing::App
     end
 
     def zPos
-      (options[:deltaZ] || 0) * (layer-1)
+      (options[:deltaZ] || 0) * index
     end
 
     def squareWidth
@@ -130,17 +136,11 @@ class PyramidApp < Processing::App
       rows * squareHeight + (rows - 1) * squareSpacing
     end
 
-    def layerX
-      width * 0.5 - bounding_width * 0.5
-    end
-
-    def layerY
-      height * 0.5 - bounding_height * 0.5
-    end
-
     def draw
       pushMatrix
-        translate(layerX, layerY, zPos)
+        translate(width/2, height/2)
+        rotate(options[:layerRotation] * index) if options[:layerRotation]
+        translate(-bounding_width * 0.5, -bounding_width * 0.5, zPos)
         # rect(0,0, bounding_width, bounding_height)
       
         0.upto(rows-1) do |row|
@@ -171,7 +171,7 @@ class SketchController
   include SketchControl
 
   attr_reader :options
-  attr_reader :bgcolor, :fatness, :squareSize, :layer_count, :deltaZ, :spacing
+  attr_reader :bgcolor, :fatness, :squareSize, :layer_count, :deltaZ, :spacing, :layerRotation
 
   def initialize(_opts = {})
     @options = _opts || {}
@@ -182,11 +182,12 @@ class SketchController
     sketch_controls do |c|
       c.title = "Sketch Controls Panel"
 
-      c.slider :label => :layer_count, :min => 0, :max => 20
+      c.slider :label => :layer_count, :min => 1, :max => 50
       c.slider :label => :fatness, :min => 0, :max => 300
       c.slider :label => :squareSize, :min => 0, :max => 500
       c.slider :label => :deltaZ, :min => -300, :max => 300
       c.slider :label => :spacing, :min => -100, :max => 300
+      c.slider :label => :layerRotation, :min => 0, :max => TWO_PI
       # c.slider :label => :spacingY, :min => 0, :max => 300
       # c.slider :label => :shapeOffset, :min => 0, :max => 300
       # c.slider :label => :rotation, :min => 0, :max => 360
