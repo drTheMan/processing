@@ -82,11 +82,8 @@ class CircularApp < Processing::App
       main.ellipse(p.x, p.y, 20, 20)
     end
 
-    private
-
     def calculate_size
-      return nil if !options[:position]
-      options[:position].dist(origin)
+      return nil
     end
 
     def calculate_angle
@@ -119,6 +116,11 @@ class CircularApp < Processing::App
       position.add(origin)
       return position
     end
+
+    def calculate_size
+      return nil if !options[:position]
+      options[:position].dist(origin)
+    end
   end # of class Circular
 
   class Squarer
@@ -133,7 +135,25 @@ class CircularApp < Processing::App
       return pos
     end
 
-    private
+    def calculate_size
+      return nil if !options[:position]
+      x = main.abs(options[:position].x - origin.x)
+      y = main.abs(options[:position].y - origin.y)
+      return x > y ? x : y
+    end
+  end # of class Squarer
+
+  class Triangular
+    include Path
+
+    def position
+      # pos = PVector.new(0, -size)
+      # pos.rotate(angle)
+      # multiplier = (size / (main.abs(pos.x) > main.abs(pos.y) ? main.abs(pos.x) : main.abs(pos.y)))
+      # pos.mult(multiplier)
+      # pos.add(origin)
+      # return pos
+    end
 
     def calculate_size
       return nil if !options[:position]
