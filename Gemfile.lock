@@ -23,5 +23,5 @@ PLATFORMS
 
 DEPENDENCIES
   perlin_noise!
-  ruby-processing
+  ruby-processing (~> 1.0.11)
   sketch-control!
