@@ -17,7 +17,7 @@ class CirclesApp < Processing::App
 
   def setup
     frameRate(12)
-    size(400, 400, P3D);
+    size(1000, 600, P3D);
     sketch_control
     # smooth();
   end    
@@ -103,7 +103,7 @@ class CirclesApp < Processing::App
           rotate(rotateAngle+random(rotateVariationAngle))
           
           if shapeName == :rectangle
-            rect(0,0 , w, h)
+            rect(0,0 , w, h, sketch_control.cornerRadius.to_i, sketch_control.cornerRadius.to_i, sketch_control.cornerRadius.to_i, sketch_control.cornerRadius.to_i)
           elsif shapeName == :circle
             ellipse(0,0, w, h)
           elsif shapeName == :triangle
@@ -137,10 +137,10 @@ class CirclesApp < Processing::App
             stroke(strokecolor)
             ww = w.to_f / 3
             hh = h.to_f / 3
-            rect(0, hh, w, hh)
-            rect(ww, 0, ww, h)
+            rect(0, hh, w, hh, sketch_control.cornerRadius.to_i, sketch_control.cornerRadius.to_i, sketch_control.cornerRadius.to_i, sketch_control.cornerRadius.to_i)
+            rect(ww, 0, ww, h, sketch_control.cornerRadius.to_i, sketch_control.cornerRadius.to_i, sketch_control.cornerRadius.to_i, sketch_control.cornerRadius.to_i)
             noStroke
-            rect(1, hh, w-2, hh-1)
+            rect(1, hh, w-2, hh-1, sketch_control.cornerRadius.to_i, sketch_control.cornerRadius.to_i, sketch_control.cornerRadius.to_i, sketch_control.cornerRadius.to_i)
           end
 
         popMatrix
@@ -155,7 +155,7 @@ class SketchController
 
   attr_reader :options
   attr_reader :bgcolor, :strokecolor, :shapecolor, :shapeWidth, :shapeOffset,
-    :shapeHeight, :rotation, :rotateVariation, :spacingX, :spacingY, :spacingZ, :shapeOffsetZ
+    :shapeHeight, :rotation, :rotateVariation, :spacingX, :spacingY, :spacingZ, :shapeOffsetZ, :cornerRadius
 
   def initialize(_opts = {})
     @options = _opts || {}
@@ -168,6 +168,7 @@ class SketchController
 
       c.slider :label => :shapeWidth, :min => 0, :max => 300
       c.slider :label => :shapeHeight, :min => 0, :max => 300
+      c.slider :label => :cornerRadius, :min => 0, :max => 90
       c.slider :label => :spacingX, :min => 0, :max => 300
       c.slider :label => :spacingY, :min => 0, :max => 300
       c.slider :label => :spacingZ, :min => -300, :max => 300
