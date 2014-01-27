@@ -9,17 +9,23 @@
  */
 
 ParticleSystem ps;
+NoiseMover nm;
 
 void setup() {
   size(640,360, P3D);
-  ps = new ParticleSystem(new PVector(width/2,height*0.9, 500));
+  
   fill(200, 200, 200, 100);
+  nm = new NoiseMover(new PVector(width/2,height*0.9, 500), new PVector(0.0, 0, 1.0));
+  ps = new ParticleSystem(nm.pos.get());
 //  noFill();
 }
 
 void draw() {
   background(0);
   ps.addParticle();
+  
+  nm.move();
+  ps.origin = nm.pos.get();
 
   pushMatrix(); 
     rotateX(PI/-5);
