@@ -91,15 +91,15 @@ class CirclesApp < Processing::App
     stroke(strokecolor)
 
 
-    0.upto(height / (shapeHeight+spacingX)) do |row|
-      0.upto(width / (shapeWidth+spacingY)) do |col|
+    0.upto(height / (shapeHeight+spacingY)) do |row|
+      0.upto(width / (shapeWidth+spacingX)) do |col|
         x = col * (shapeWidth+spacingX) - random(shapeOffset)
         y = row * (shapeHeight+spacingY) - random(shapeOffset)
         w = shapeWidth + random(shapeOffset)
         h = shapeHeight + random(shapeOffset)
 
         pushMatrix
-          translate(x,y)
+          translate(x,y, sketch_control.spacingZ.to_i + random(sketch_control.shapeOffsetZ.to_i))
           rotate(rotateAngle+random(rotateVariationAngle))
           
           if shapeName == :rectangle
@@ -154,7 +154,8 @@ class SketchController
   include SketchControl
 
   attr_reader :options
-  attr_reader :bgcolor, :strokecolor, :shapecolor, :shapeWidth, :shapeOffset, :shapeHeight, :rotation, :rotateVariation, :spacingX, :spacingY
+  attr_reader :bgcolor, :strokecolor, :shapecolor, :shapeWidth, :shapeOffset,
+    :shapeHeight, :rotation, :rotateVariation, :spacingX, :spacingY, :spacingZ, :shapeOffsetZ
 
   def initialize(_opts = {})
     @options = _opts || {}
@@ -169,7 +170,10 @@ class SketchController
       c.slider :label => :shapeHeight, :min => 0, :max => 300
       c.slider :label => :spacingX, :min => 0, :max => 300
       c.slider :label => :spacingY, :min => 0, :max => 300
+      c.slider :label => :spacingZ, :min => -300, :max => 300
       c.slider :label => :shapeOffset, :min => 0, :max => 300
+      c.slider :label => :shapeOffsetZ, :min => 0, :max => 300
+
       c.slider :label => :rotation, :min => 0, :max => 360
       c.slider :label => :rotateVariation, :min => 0, :max => 360
 
