@@ -16,6 +16,7 @@ class CirclesApp < Processing::App
   end
 
   def setup
+    frameRate(12)
     size(400, 400, P3D);
     sketch_control
     # smooth();
@@ -44,6 +45,14 @@ class CirclesApp < Processing::App
     sketch_control.shapecolor || color(255,255,255)
   end
 
+  def spacingX
+    sketch_control.spacingX.to_i
+  end
+
+  def spacingY
+    sketch_control.spacingY.to_i
+  end
+
   def draw
     if @paused != true
       background bgcolor
@@ -64,7 +73,7 @@ class CirclesApp < Processing::App
   end
 
   def shapeName
-    shapes = [:rectangle, :circle, :triangle, :triangle2, :typo1, :typo2]
+    shapes = [:rectangle, :circle, :triangle, :triangle2, :cross, :typo1, :typo2]
     return shapes[@variation.to_i % shapes.length]
   end
 
@@ -81,10 +90,11 @@ class CirclesApp < Processing::App
     fill(shapeColor)
     stroke(strokecolor)
 
-    0.upto(height / shapeHeight) do |row|
-      0.upto(width / shapeWidth) do |col|
-        x = col * shapeWidth - random(shapeOffset)
-        y = row * shapeHeight - random(shapeOffset)
+
+    0.upto(height / (shapeHeight+spacingX)) do |row|
+      0.upto(width / (shapeWidth+spacingY)) do |col|
+        x = col * (shapeWidth+spacingX) - random(shapeOffset)
+        y = row * (shapeHeight+spacingY) - random(shapeOffset)
         w = shapeWidth + random(shapeOffset)
         h = shapeHeight + random(shapeOffset)
 
@@ -122,6 +132,15 @@ class CirclesApp < Processing::App
             w = shapeWidth + random(shapeOffset)
             h = shapeHeight + random(shapeOffset)
             triangle(x,y, x+w,y+h, x+w,y)
+          elsif shapeName == :cross
+            # noStroke
+            stroke(strokecolor)
+            ww = w.to_f / 3
+            hh = h.to_f / 3
+            rect(0, hh, w, hh)
+            rect(ww, 0, ww, h)
+            noStroke
+            rect(1, hh, w-2, hh-1)
           end
 
         popMatrix
@@ -135,7 +154,7 @@ class SketchController
   include SketchControl
 
   attr_reader :options
-  attr_reader :bgcolor, :strokecolor, :shapecolor, :shapeWidth, :shapeOffset, :shapeHeight, :rotation, :rotateVariation
+  attr_reader :bgcolor, :strokecolor, :shapecolor, :shapeWidth, :shapeOffset, :shapeHeight, :rotation, :rotateVariation, :spacingX, :spacingY
 
   def initialize(_opts = {})
     @options = _opts || {}
@@ -148,6 +167,8 @@ class SketchController
 
       c.slider :label => :shapeWidth, :min => 0, :max => 300
       c.slider :label => :shapeHeight, :min => 0, :max => 300
+      c.slider :label => :spacingX, :min => 0, :max => 300
+      c.slider :label => :spacingY, :min => 0, :max => 300
       c.slider :label => :shapeOffset, :min => 0, :max => 300
       c.slider :label => :rotation, :min => 0, :max => 360
       c.slider :label => :rotateVariation, :min => 0, :max => 360
