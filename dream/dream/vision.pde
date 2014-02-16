@@ -38,13 +38,14 @@ class Vision {
       mask.background(#000000); 
       mask.noStroke();
       mask.fill(#ffffff);
-      mask.rect(random(-200, _image.width-100), random(-200, _image.height-100), random(230, 260), random(170,200));
+      mask.translate(random(-200, _image.width-100), random(-200, _image.height-100));
+      mask.rotate(random(TWO_PI));
+      mask.rect(0,0, random(230, 260), random(170,200));
     mask.endDraw();
   }
 
   void initImage(){
     image = _image.get(0, 0, _image.width, _image.height);
-    //    image.resize(dw,dh);
     initMask();
     image.mask(mask);
   }

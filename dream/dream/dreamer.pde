@@ -68,7 +68,7 @@ class Dreamer {
  
   void addDream(){
     Vision vision = new Vision(resized);
-    H.add(new HImage(vision.image)).loc(posX(), posY()).rotation(random(-3, 3)).alpha(50);
+    H.add(new HImage(vision.image)).loc(posX(), posY()).alpha(50);//.rotation(random(-3, 3));
   }
 }
     

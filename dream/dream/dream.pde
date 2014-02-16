@@ -11,7 +11,7 @@ Dreamer dreamer;
 JSONObject jsonSettings;
 
 void setup(){
-  H.init(this).background(#ffffff);
+  H.init(this).background(#ffffff); //.autoClear(false);
 
   frameRate(2);
   smooth();
