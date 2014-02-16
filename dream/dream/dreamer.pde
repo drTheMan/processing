@@ -58,6 +58,7 @@ class Dreamer {
   }
 
   void drawDream(){
+    new Vision(resized, posX(), posY()).draw();
   }
 }
     
