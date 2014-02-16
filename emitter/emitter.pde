@@ -15,4 +15,6 @@ void mouseMoved(){
   ps.origin = new PVector(mouseX, mouseY);
 }
 
-
+void keyPressed(){
+  if(keyCode == ENTER) saveFrame("emitter-f###.png");
+}
