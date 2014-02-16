@@ -82,3 +82,8 @@ void saveSettings(){
   saveJSONObject(jsonSettings, "data/settings.json");
 }
 
+void keyPressed(){
+  if(keyCode == ENTER) saveFrame("dream-f###.png");
+  if(keyCode == TAB) dreamer.update();
+}
+

@@ -31,7 +31,7 @@ class Dreamer {
     // canvasHeight = resized.height * 1.2;
 
     resizer = new HImage(resized);
-    H.add(resizer).loc(posX(), posY()); //.scale(0.5f);
+    H.add(resizer).loc(posX(), posY()).alpha(100); //.scale(0.5f);
   }
 
   float resizeFactor(){
@@ -68,7 +68,7 @@ class Dreamer {
  
   void addDream(){
     Vision vision = new Vision(resized);
-    H.add(new HImage(vision.image)).loc(vision.dx+posX(), vision.dy+posY()).anchorAt(H.CENTER).rotation(random(-3, 3)).alpha(100);
+    H.add(new HImage(vision.image)).loc(posX(), posY()).rotation(random(-3, 3)).alpha(50);
   }
 }
     
