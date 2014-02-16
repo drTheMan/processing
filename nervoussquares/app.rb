@@ -26,7 +26,7 @@ class TunnelApp < Processing::App
 
   def key_pressed
     # screenshot
-    save_frame if key_code == ENTER
+    saveFrame("nervoussquares-f######.png") if key_code == ENTER
 
     # add new swirly to the scene
     @swirlies = swirlies + [generate_swirly] if key == ' '
