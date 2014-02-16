@@ -9,7 +9,7 @@ class Dreamer {
   Dreamer(){
     init(null);
   }
-  
+
   Dreamer(String _path){
     init(_path);
   }
@@ -21,8 +21,7 @@ class Dreamer {
    resized = loadImage(path);
    //resized.copy(original, 0,0, original.width, original.height, 0, 0, (int)(original.width * resizeFactor()), (int)(original.height * resizeFactor()));
    // resized.resize(floor(original.width * resizeFactor()), floor(original.height * resizeFactor()));
-   resized.resize(800, 0);
-   
+   resized.resize(400, 0);
 
     size(winW(), winH());    
     // resized = 

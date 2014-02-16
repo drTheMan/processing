@@ -8,8 +8,13 @@ import javax.swing.*;
 //final JFileChooser fc;
 Dreamer dreamer;
 
+JSONObject jsonSettings;
+
 void setup(){
   frameRate(4);
+
+  jsonSettings = new JSONObject();
+  loadSettings();
 
   // set system look and feel 
   try { 
@@ -21,7 +26,11 @@ void setup(){
   // create a file chooser 
   JFileChooser fc = new JFileChooser();
 
-  dreamer = new Dreamer(chooseFile());
+  if(jsonSettings.getString("path", "") != ""){
+    dreamer = new Dreamer(jsonSettings.getString("path"));
+  } else {
+    dreamer = new Dreamer(chooseFile());
+  }
 
   background(255);
   dreamer.drawImage();
@@ -42,6 +51,8 @@ String chooseFile(){
   if (returnVal == JFileChooser.APPROVE_OPTION) {
      try {
        result = fc.getSelectedFile().getPath();
+       jsonSettings.setString("path", result);
+       saveSettings();
      } catch (Exception e) {
        e.printStackTrace();
      }
@@ -52,5 +63,18 @@ String chooseFile(){
 
 void draw(){
   dreamer.drawDream();
+}
+
+void loadSettings(){
+  try{
+    jsonSettings = loadJSONObject("settings.json");
+    println("loaded value: "+jsonSettings.getString("path", "<none>"));
+  } catch (NullPointerException e) {
+    println("settings.json could not be found");
+  }
+}
+
+void saveSettings(){
+  saveJSONObject(jsonSettings, "data/settings.json");
 }
 
