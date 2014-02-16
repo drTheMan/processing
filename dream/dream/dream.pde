@@ -11,7 +11,10 @@ Dreamer dreamer;
 JSONObject jsonSettings;
 
 void setup(){
-  frameRate(4);
+  H.init(this).background(#ffffff);
+
+  frameRate(2);
+  smooth();
 
   jsonSettings = new JSONObject();
   loadSettings();
@@ -32,11 +35,11 @@ void setup(){
     dreamer = new Dreamer(chooseFile());
   }
 
-  background(255);
-  dreamer.drawImage();
-  for(int i=0; i<10; i++){
-    dreamer.drawDream();
-  }
+//  background(255);
+//  dreamer.drawImage();
+//  for(int i=0; i<10; i++){
+//    dreamer.drawDream();
+//  }
 }
 
 String chooseFile(){
@@ -62,7 +65,8 @@ String chooseFile(){
 }
 
 void draw(){
-  dreamer.drawDream();
+  dreamer.update();
+  dreamer.draw();
 }
 
 void loadSettings(){

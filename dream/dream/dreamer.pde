@@ -2,6 +2,7 @@ class Dreamer {
   String path;
   PImage original;
   PImage resized;
+  HImage resizer;
 
   final int MAXW = 800;
   final int MAXH = 600;
@@ -17,16 +18,20 @@ class Dreamer {
   void init(String _path){
     if((path = _path) == null || path == "") return;
     if((original = loadImage(path)) == null) return;
- 
-   resized = loadImage(path);
-   //resized.copy(original, 0,0, original.width, original.height, 0, 0, (int)(original.width * resizeFactor()), (int)(original.height * resizeFactor()));
-   // resized.resize(floor(original.width * resizeFactor()), floor(original.height * resizeFactor()));
-   resized.resize(400, 0);
 
+    resized = loadImage(path);
+    //resized.copy(original, 0,0, original.width, original.height, 0, 0, (int)(original.width * resizeFactor()), (int)(original.height * resizeFactor()));
+    // resized.resize(floor(original.width * resizeFactor()), floor(original.height * resizeFactor()));
+    resized.resize(400, 0);
+
+    
     size(winW(), winH());    
     // resized = 
     // canvasWidth = resized.width * 1.2;
     // canvasHeight = resized.height * 1.2;
+
+    resizer = new HImage(resized);
+    H.add(resizer).loc(posX(), posY()); //.scale(0.5f);
   }
 
   float resizeFactor(){
@@ -53,12 +58,17 @@ class Dreamer {
     return floor((winH() - resized.height)/2.0);
   }
 
-  void drawImage(){
-    image(resized, posX(), posY());
+  void update(){
+    addDream();
   }
 
-  void drawDream(){
-    new Vision(resized, posX(), posY()).draw();
+  void draw(){
+    H.drawStage();
+  }
+ 
+  void addDream(){
+    Vision vision = new Vision(resized);
+    H.add(new HImage(vision.image)).loc(vision.dx+posX(), vision.dy+posY()).anchorAt(H.CENTER).rotation(random(-3, 3)).alpha(100);
   }
 }
     
