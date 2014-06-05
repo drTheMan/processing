@@ -1,17 +1,17 @@
 class Grid{
   PVector pos, cellDimensions;
   PVector dimensions;
-  PVector cursor;
+  ArrayList<PVector> cursors;
   
   Grid(){
-    pos = new PVector(0,0,0);
+    pos = new PVector(15,15,0);
     cellDimensions = new PVector(30, 30, 2);
-    dimensions = new PVector(50,30, 1);
-    cursor = new PVector(-100, -100, -100);
+    dimensions = new PVector(20,15, 1);
+    cursors = new ArrayList<PVector>();
   }
 
-  void draw(PVector _cursor){
-    cursor = _cursor;
+  void draw(ArrayList<PVector> _cursors){
+    cursors = _cursors;
     draw();
   }
 
@@ -24,9 +24,14 @@ class Grid{
           pos.y + cellDimensions.y * y,
           pos.z + cellDimensions.z * z);
 
-      new GridCell(cellPos, cellDimensions, distanceToProgression(cellPos.dist(cursor))).draw();
-
-        
+      float progression = 0.0;
+      
+      for (int i = cursors.size()-1; i >= 0; i--) {
+        PVector cursor = cursors.get(i);
+        progression = max(distanceToProgression(cellPos.dist(cursor)), progression);
+      }
+      
+      new GridCell(cellPos, cellDimensions, progression).draw();
     }}}   
   }
 
@@ -61,8 +66,8 @@ class GridCell{
 //    PVector d = dimensions.get();
 //    d.mult(progression);
     pushMatrix();
-      translate(pos.x, pos.y, pos.z);
-      rotateX(progression*10);
+      translate(pos.x, pos.y, pos.z - 100.0 * progression);
+      rotateZ(progression*PI);
       box(dimensions.x, dimensions.y, dimensions.z);
     popMatrix();
   }
