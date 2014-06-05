@@ -3,22 +3,29 @@ Grid grid;
 ArrayList<PVector> cursors;
 ArrayList<PVector> velocities;
 
+static int COLS = 32;
+static int ROWS = 24;
+
+static int CELLW = 30;
+static int CELLH = 30;
 
 void setup() {
-  size(600,450, P3D);
+  size(1000,800, P3D);
 //  ortho(0, width, 0, height);
   fill(255, 255, 255);
   noStroke();
 
-  grid = new Grid();
+  grid = new Grid(COLS, ROWS, CELLW, CELLH);
+  grid.pos.x = (width - CELLW * COLS + CELLW) / 2 ;
+  grid.pos.y = (height - CELLH * ROWS + CELLH) / 2;
+  
   cursors = new ArrayList<PVector>();
   velocities = new ArrayList<PVector>();
   
-  cursors.add(new PVector(0,0,0));
-  velocities.add(new PVector(random(5.0), random(5.0), 0));
-  
-  cursors.add(new PVector(random(width), random(height), 0));
-  velocities.add(new PVector(5.0 - random(10.0), 5.0 - random(10.0), 0));
+  for(int i = 0; i < 3; i++){
+    cursors.add(new PVector(random(width), random(height), 0));
+    velocities.add(new PVector(5.0 - random(10.0), 5.0 - random(10.0), 0));
+  }
 }
 
 void draw() {

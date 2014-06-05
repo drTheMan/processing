@@ -4,9 +4,18 @@ class Grid{
   ArrayList<PVector> cursors;
   
   Grid(){
-    pos = new PVector(15,15,0);
-    cellDimensions = new PVector(30, 30, 2);
-    dimensions = new PVector(20,15, 1);
+    init(10, 10, 30, 30);
+  }
+
+  Grid(int columns, int rows, int colWidth, int rowHeight){
+    init(columns, rows, colWidth, rowHeight);
+  }
+
+  void init(int columns, int rows, int colWidth, int rowHeight){
+    cellDimensions = new PVector(colWidth, rowHeight, 2);
+    dimensions = new PVector(columns, rows, 1);
+
+    pos = new PVector(cellDimensions.x*0.5,cellDimensions.y*0.5, 0);
     cursors = new ArrayList<PVector>();
   }
 
