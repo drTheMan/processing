@@ -55,12 +55,12 @@ class GridCell{
 
   void draw(){ 
     fill(clr);
-    PVector p = pos.get();
-    p.mult(progression);
+    PVector d = dimensions.get();
+    d.mult(progression);
     pushMatrix();
-      translate(p.x, p.y, p.z);
+      translate(pos.x, pos.y, pos.z);
 //      rotate(random(1.0), random(1.0), random(1.0), 0.0);
-      box(dimensions.x, dimensions.y, dimensions.z);
+      box(d.x, d.y, d.z);
     popMatrix();
   }
 }
