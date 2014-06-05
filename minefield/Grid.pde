@@ -1,25 +1,25 @@
 class Grid{
   PVector pos, cellDimensions;
   PVector dimensions;
-  ArrayList<PVector> cursors;
+  ArrayList<Cursor> cursors;
   
   Grid(){
-    init(10, 10, 30, 30);
+    init(10, 10, 30, 30, new ArrayList<Cursor>());
   }
 
-  Grid(int columns, int rows, int colWidth, int rowHeight){
-    init(columns, rows, colWidth, rowHeight);
+  Grid(int columns, int rows, int colWidth, int rowHeight, ArrayList<Cursor> _cursors){
+    init(columns, rows, colWidth, rowHeight, _cursors);
   }
 
-  void init(int columns, int rows, int colWidth, int rowHeight){
+  void init(int columns, int rows, int colWidth, int rowHeight, ArrayList<Cursor> _cursors){
     cellDimensions = new PVector(colWidth, rowHeight, 2);
     dimensions = new PVector(columns, rows, 1);
 
     pos = new PVector(cellDimensions.x*0.5,cellDimensions.y*0.5, 0);
-    cursors = new ArrayList<PVector>();
+    cursors = _cursors;
   }
 
-  void draw(ArrayList<PVector> _cursors){
+  void draw(ArrayList<Cursor> _cursors){
     cursors = _cursors;
     draw();
   }
@@ -36,8 +36,8 @@ class Grid{
       float progression = 0.0;
       
       for (int i = cursors.size()-1; i >= 0; i--) {
-        PVector cursor = cursors.get(i);
-        progression = max(distanceToProgression(cellPos.dist(cursor)), progression);
+        Cursor cursor = cursors.get(i);
+        progression = max(distanceToProgression(cellPos.dist(cursor.position)), progression);
       }
       
       new GridCell(cellPos, cellDimensions, progression).draw();
@@ -47,7 +47,13 @@ class Grid{
   float distanceToProgression(float distance){
     float dist = min(distance, 100);
     return 1.0 - sin(PI - dist*0.01*PI*0.5);
-  }   
+  }
+  
+  void moveCursors(PVector bounds){
+    for (int i = cursors.size()-1; i >= 0; i--) {
+      cursors.get(i).move(bounds);
+    }
+  }
 }
 
 class GridCell{
