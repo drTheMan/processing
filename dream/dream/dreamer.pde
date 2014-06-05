@@ -1,8 +1,14 @@
 class Dreamer {
+  float DISPLACEMENT = 2f;
+  float ROTATIONING = 0.2f;
+  float SCALING = 0.02f;
+  
+  float BRIGHTENING = 200.0f;
+  float DARKENING = 200.0f;
+
   String path;
   PImage original;
   PImage resized;
-  HImage resizer;
 
   final int MAXW = 800;
   final int MAXH = 600;
@@ -20,18 +26,11 @@ class Dreamer {
     if((original = loadImage(path)) == null) return;
 
     resized = loadImage(path);
-    //resized.copy(original, 0,0, original.width, original.height, 0, 0, (int)(original.width * resizeFactor()), (int)(original.height * resizeFactor()));
-    // resized.resize(floor(original.width * resizeFactor()), floor(original.height * resizeFactor()));
     resized.resize(400, 0);
 
-    
     size(winW(), winH());    
-    // resized = 
-    // canvasWidth = resized.width * 1.2;
-    // canvasHeight = resized.height * 1.2;
 
-    resizer = new HImage(resized);
-    H.add(resizer).loc(posX(), posY()).alpha(100); //.scale(0.5f);
+//    H.add(new HImage(resized)).loc(posX(), posY()).alpha(100); //.scale(0.5f);
   }
 
   float resizeFactor(){
@@ -68,7 +67,14 @@ class Dreamer {
  
   void addDream(){
     Vision vision = new Vision(resized);
-    H.add(new HImage(vision.image)).loc(posX(), posY()).alpha(50);//.rotation(random(-3, 3));
+    H.add( 
+        new HImage(vision.image)
+          .tint(#ffffff, 255-(int)random(BRIGHTENING))
+    )
+      .loc(posX()+random(-DISPLACEMENT, DISPLACEMENT), posY()+random(-DISPLACEMENT, DISPLACEMENT))
+//      .alpha(200)
+      .rotation(random(-ROTATIONING, ROTATIONING))
+      .scale(random(1-SCALING, 1+SCALING));
   }
 }
     

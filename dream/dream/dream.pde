@@ -13,7 +13,7 @@ JSONObject jsonSettings;
 void setup(){
   H.init(this).background(#ffffff); //.autoClear(false);
 
-  frameRate(2);
+  frameRate(24);
   smooth();
 
   jsonSettings = new JSONObject();

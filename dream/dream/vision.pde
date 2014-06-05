@@ -38,7 +38,7 @@ class Vision {
       mask.background(#000000); 
       mask.noStroke();
       mask.fill(#ffffff);
-      mask.translate(random(-200, _image.width-100), random(-200, _image.height-100));
+      mask.translate(random(-50, _image.width-100), random(-50, _image.height-100));
       mask.rotate(random(TWO_PI));
       mask.rect(0,0, random(230, 260), random(170,200));
     mask.endDraw();

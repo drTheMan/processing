@@ -32,8 +32,12 @@ class TunnelApp < Processing::App
   end
 
   def draw
+    breakers.reject!(&:done?)
     breakers.each(&:animate)
-    @breakers = generate_breakers if breakers.reject(&:done?).empty?
+    # @breakers = generate_breakers if breakers.reject(&:done?).empty?
+    if frameCount % 36 == 0
+      @breakers += generate_breakers
+    end
   end
 
 
