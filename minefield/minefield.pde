@@ -3,11 +3,11 @@ Sprite flipSprite;
 
 ArrayList<Cursor> cursors;
 
-static int COLS = 30;
-static int ROWS = 20;
+static int COLS = 35;
+static int ROWS = 25;
 
-static int CELLW = 28;
-static int CELLH = 28;
+static int CELLW = 27;
+static int CELLH = 27;
 
 void setup() {
   size(1000,800, P3D);
