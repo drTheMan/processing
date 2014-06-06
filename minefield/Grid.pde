@@ -75,13 +75,16 @@ class GridCell{
   }
 
   void draw(){ 
-    fill(clr);
 //    PVector d = dimensions.get();
 //    d.mult(progression);
-    pushMatrix();
-      translate(pos.x, pos.y, pos.z - 100.0 * progression);
-      rotateZ(progression*PI);
-      box(dimensions.x, dimensions.y, dimensions.z);
-    popMatrix();
+
+//    fill(clr);
+//    pushMatrix();
+//      translate(pos.x, pos.y, pos.z - 100.0 * progression);
+//      rotateZ(progression*PI);
+//      box(dimensions.x, dimensions.y, dimensions.z);
+//    popMatrix();
+
+    flipSprite.draw(progression, (int)pos.x, (int)pos.y);
   }
 }

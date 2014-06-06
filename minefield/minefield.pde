@@ -1,12 +1,13 @@
 Grid grid;
+Sprite flipSprite;
 
 ArrayList<Cursor> cursors;
 
-static int COLS = 32;
-static int ROWS = 24;
+static int COLS = 30;
+static int ROWS = 20;
 
-static int CELLW = 30;
-static int CELLH = 30;
+static int CELLW = 28;
+static int CELLH = 28;
 
 void setup() {
   size(1000,800, P3D);
@@ -26,7 +27,8 @@ void setup() {
 
   grid.pos.x = (width - CELLW * COLS + CELLW) / 2 ;
   grid.pos.y = (height - CELLH * ROWS + CELLH) / 2;
-  
+
+  flipSprite = new Sprite("flipFrame", 31);
 }
 
 void draw() {
