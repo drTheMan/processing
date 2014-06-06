@@ -41,10 +41,14 @@ class Sprite{
   }
 
   void draw(int frame, int x, int y){
-    image(getImage(frame), x, y);
+    drawImage(getImage(frame), x, y);
   }
 
   void draw(float frame, int x, int y){
-    image(getImage(frame), x, y);
+    drawImage(getImage(frame), x, y);
+  }
+  
+  void drawImage(PImage img, int x, int y){
+    image(img, x, y);
   }
 }

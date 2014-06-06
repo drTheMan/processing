@@ -45,6 +45,7 @@ class Grid{
       }
       
       cell.progression = progression;
+      
       cell.draw();
     }}}   
   }
@@ -69,7 +70,7 @@ class GridCell{
   GridCell(PVector _pos, PVector _dimensions, Sprite _sprite, float _prog){
     init(_pos, _dimensions, _sprite, _prog);
   }
-  
+
   void init(PVector _pos, PVector _dimensions, Sprite _sprite, float _progression){
     pos = _pos;
     dimensions = _dimensions;
@@ -88,6 +89,11 @@ class GridCell{
 //      rotateZ(progression*PI);
 //      box(dimensions.x, dimensions.y, dimensions.z);
 //    popMatrix();
+
+//    if(progression > 1.0){
+//      sprite.draw(progression-1.0, (int)pos.x+10, (int)pos.y);
+//      return;
+//    }
 
     sprite.draw(progression, (int)pos.x, (int)pos.y);
   }

@@ -26,6 +26,11 @@ class Cursor{
   float getProgression(GridCell cell){
     float distance = position.dist(cell.pos);
     float dist = min(distance, radius);
-    return 1.0 - sin(PI - map(dist, 0.0, radius, 0.0, PI*0.5));
+    float progression = sin(PI - map(dist, 0.0, radius, 0.0, PI*0.5));
+    
+    if(position.x > cell.pos.x) ((EffectSprite)cell.sprite).flipHorizontal = true;
+    if(position.y > cell.pos.y) ((EffectSprite)cell.sprite).flipVertical = true;
+    
+    return 1.0 - progression; 
   }
 }

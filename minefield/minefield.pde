@@ -20,7 +20,7 @@ void setup() {
   cursors.add(new Cursor(new PVector(mouseX, mouseY, 0), new PVector(0,0,0)));
 
   // create the grid object and pass it a sprite object for the animations
-  grid = new Grid(COLS, ROWS, CELLW, CELLH, cursors, new Sprite("flipFrame", 31));
+  grid = new Grid(COLS, ROWS, CELLW, CELLH, cursors, new EffectSprite("flipFrame", 31));
   // modify the grid's x and y position to center it in our window
   grid.pos.x = (width - CELLW * COLS + CELLW) / 2 ;
   grid.pos.y = (height - CELLH * ROWS + CELLH) / 2;
@@ -28,7 +28,7 @@ void setup() {
 
 void draw() {
   background(0);
-  
+
   grid.cursors.get(grid.cursors.size()-1).position = new PVector(mouseX, mouseY, 0);
   grid.cursors.get(grid.cursors.size()-1).radius = mousePressed ? 200 : 30;
   grid.draw();
