@@ -4,14 +4,18 @@ class Sprite{
   int numFrames;
   PImage[] images;
 
+  Sprite(){
+    init("missing", 0);
+  }
+    
   Sprite(String _sequenceName, int _numFrames){
-    imageMode(CENTER);
     init(_sequenceName, _numFrames);
   }
 
   void init(String _sequenceName, int _numFrames){
     sequenceName = _sequenceName;
     numFrames = _numFrames;
+    imageMode(CENTER);
     load();
   }
 
