@@ -32,7 +32,9 @@ void setup() {
 void draw() {
   background(0);
   
+  
   grid.cursors.get(grid.cursors.size()-1).position = new PVector(mouseX, mouseY, 0);
+  grid.cursors.get(grid.cursors.size()-1).radius = mousePressed ? 200 : 30;
   grid.draw();
   grid.moveCursors(new PVector(width, height,0));
 }
@@ -40,3 +42,5 @@ void draw() {
 void keyPressed(){
   if(key == ENTER) saveFrame("screen-####.png");
 }
+
+

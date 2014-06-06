@@ -33,20 +33,18 @@ class Grid{
           pos.y + cellDimensions.y * y,
           pos.z + cellDimensions.z * z);
 
+      GridCell cell = new GridCell(cellPos, cellDimensions);
+
       float progression = 0.0;
       
       for (int i = cursors.size()-1; i >= 0; i--) {
         Cursor cursor = cursors.get(i);
-        progression = max(distanceToProgression(cellPos.dist(cursor.position)), progression);
+        progression = max(cursor.getProgression(cell), progression);
       }
       
-      new GridCell(cellPos, cellDimensions, progression).draw();
+      cell.progression = progression;
+      cell.draw();
     }}}   
-  }
-
-  float distanceToProgression(float distance){
-    float dist = min(distance, 100);
-    return 1.0 - sin(PI - dist*0.01*PI*0.5);
   }
   
   void moveCursors(PVector bounds){
