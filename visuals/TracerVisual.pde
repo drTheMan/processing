@@ -1,4 +1,25 @@
 class TracerVisual extends Visual{
+  class Element{
+    public int x,y,size;
+    
+    Element(){
+    }
+    
+    Element(int _x, int _y, int _size){
+      x = _x;
+      y = _y;
+      size = _size;
+    }
+
+    Element clone(){
+      Element clone = new Element();
+      clone.x = x;
+      clone.y = y;
+      clone.size = size;
+      return clone;
+    }
+  }
+
   int seed, minSize, maxSize, count;
   float speed;
 
@@ -57,25 +78,49 @@ class TracerVisual extends Visual{
       randomSeed(seed + i + 1 + (int)random(iteration*10000));
 
       // now finally define all the pixel's required properties
-      int size = (int)random(minSize, maxSize);
-      int posY = (int)random(height);
-      int posX = (int)(hypotheticalX % (width+maxSize)) - size;
+      Element el = new Element();
+      el.size = (int)random(minSize, maxSize);
+      el.y = (int)random(height);
+      el.x = (int)(hypotheticalX % (width+maxSize)) - el.size;
+      
+      Element el1 = el.clone();
 
-      while(posX < width){
+      while(el1.x < width){
         // and define all next pixel's required properties
-        int size2 = (int)random(minSize, maxSize);
         float tmp = height*0.1;
-        int posY2 = posY+(int)random(-tmp, tmp);
-        int posX2 = posX+(int)random(width*0.3);
-  
+
+        Element el2 = new Element(
+          el1.x+(int)random(width*0.3),
+          el1.y+(int)random(-tmp, tmp),
+          (int)random(minSize, maxSize)
+         );
+           
         // and draw
   //      rect(posX, posY, size, size);
         // ellipse(posX, posY, size, size);
-        line(posX, posY, posX2, posY2);
+        line(el1.x, el1.y, el2.x, el2.y);
         
-        size = size2;
-        posX = posX2;
-        posY = posY2;
+        el1 = el2;
+      }
+
+      el1 = el.clone();
+
+      while(el1.x > 0){
+        // and define all next pixel's required properties
+        float tmp = height*0.1;
+
+        Element el2 = new Element(
+          el1.x-(int)random(width*0.3),
+          el1.y+(int)random(-tmp, tmp),
+          (int)random(minSize, maxSize)
+         );
+           
+        // and draw
+  //      rect(posX, posY, size, size);
+        // ellipse(posX, posY, size, size);
+        line(el1.x, el1.y, el2.x, el2.y);
+        
+        el1 = el2;
       }
     }
   }

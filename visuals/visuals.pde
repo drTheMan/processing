@@ -8,8 +8,11 @@ void setup(){
   g_visual = new TracerVisual();
 }
 
-
 void draw(){
   g_visual.update();
   g_visual.draw();
+}
+
+void keyPressed(){
+  if(key == ENTER) saveFrame("screen-####.png");
 }
