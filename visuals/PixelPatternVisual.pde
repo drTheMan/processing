@@ -14,7 +14,7 @@ class PixelPatternVisual extends Visual{
       3, // minSize
       20, // maxSize
       100, // count
-      0.30 // speed
+      0.3 // speed
     );
   }
 
@@ -47,23 +47,24 @@ class PixelPatternVisual extends Visual{
       randomSeed(seed + i * 1000);
 
       // random screen pos, plus constant cursor movement in one direction
-      int hypotheticalX = (int)(random(width) + cursor);
+      int hypotheticalX = (int)(random(width + maxSize + maxSize) + cursor);
 
       // calculate how many times the pixel has left the screen already
-      int iteration = (hypotheticalX / width);
+      int iteration = (hypotheticalX / (width + maxSize));
 
       // re-seed based on iteration, so every iteration has a different seed,
       // so every iteration the pixel has a different size and y-position
       randomSeed(seed + i + 1 + (int)random(iteration*10000));
 
       // now finally define all the pixel's required properties
-      int posX = (int)(hypotheticalX % width);
-      int posY = (int)random(height);
+      
       int size = (int)random(minSize, maxSize);
+      int posY = (int)random(height);
+      int posX = (int)(hypotheticalX % (width+maxSize)) - size;
 
       // and draw
       rect(posX, posY, size, size);
       // ellipse(posX, posY, size, size);
     }
-  }
+  } 
 }
