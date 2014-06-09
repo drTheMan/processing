@@ -5,7 +5,8 @@ void setup(){
 //  g_visual = new Visual();
 //  g_visual = new DummyBoxVisual();
 //  g_visual = new PixelPatternVisual();
-  g_visual = new TracerVisual();
+//  g_visual = new TracerVisual();
+  g_visual = new RouterVisual();
 }
 
 void draw(){

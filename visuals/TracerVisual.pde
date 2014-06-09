@@ -34,8 +34,8 @@ class TracerVisual extends Visual{
       (int)random(100), // seed
       3, // minSize
       20, // maxSize
-      20, // count
-      0.3 // speed
+      2, // count
+      0.03 // speed
     );
   }
 
@@ -46,8 +46,6 @@ class TracerVisual extends Visual{
     count = _count;
     speed = _speed;
 
-    stroke(0);
-    noFill();
 //    smooth();
   }
 
@@ -58,72 +56,56 @@ class TracerVisual extends Visual{
   void draw(){
     // clear screen
     background(255);
-    
+
+    drawBG();    
+    drawFG();
+  }
+
+  void drawFG(){
+    stroke(0);
+    noFill();
+
     int timer = millis();
     float cursor = timer * speed;
 
     for(int i= 0; i<count; i++){
-      // make visual configurable by using global seed numbers
-      // and give each pixel its own seed
+      noiseSeed(seed + i);
       randomSeed(seed + i * 1000);
-
-      // random screen pos, plus constant cursor movement in one direction
-      int hypotheticalX = (int)(random(width + maxSize + maxSize) + cursor);
-
-      // calculate how many times the pixel has left the screen already
-      int iteration = (hypotheticalX / (width + maxSize));
-
-      // re-seed based on iteration, so every iteration has a different seed,
-      // so every iteration the pixel has a different size and y-position
-      randomSeed(seed + i + 1 + (int)random(iteration*10000));
-
-      // now finally define all the pixel's required properties
-      Element el = new Element();
-      el.size = (int)random(minSize, maxSize);
-      el.y = (int)random(height);
-      el.x = (int)(hypotheticalX % (width+maxSize)) - el.size;
       
-      Element el1 = el.clone();
+      Element el = new Element(
+        (int)(width*0.5) + (int)(random(width*0.1)),
+        getY(timer), //(int)(noise(cursor*speed, sin(timer*0.0001)*0.01) * height * 2) - height,
+        10
+      );
 
-      while(el1.x < width){
-        // and define all next pixel's required properties
-        float tmp = height*0.1;
-
+      while(el.x > 0){
         Element el2 = new Element(
-          el1.x+(int)random(width*0.3),
-          el1.y+(int)random(-tmp, tmp),
-          (int)random(minSize, maxSize)
-         );
-           
-        // and draw
-  //      rect(posX, posY, size, size);
-        // ellipse(posX, posY, size, size);
-        line(el1.x, el1.y, el2.x, el2.y);
-        
-        el1 = el2;
-      }
+          el.x - (int)(random(width*0.4)),
+          getY(timer),
+          10
+        );
 
-      el1 = el.clone();
-
-      while(el1.x > 0){
-        // and define all next pixel's required properties
-        float tmp = height*0.1;
-
-        Element el2 = new Element(
-          el1.x-(int)random(width*0.3),
-          el1.y+(int)random(-tmp, tmp),
-          (int)random(minSize, maxSize)
-         );
-           
-        // and draw
-  //      rect(posX, posY, size, size);
-        // ellipse(posX, posY, size, size);
-        line(el1.x, el1.y, el2.x, el2.y);
-        
-        el1 = el2;
+        line(el.x, el.y, el2.x, el2.y);
+        el = el2;
       }
     }
   }
   
-  
+  int getY(int time){
+    float cursor = time * speed;
+    return (int)(noise(cursor*speed, sin(cursor*0.0001)+random(TWO_PI)*1000) * height);
+  }
+    
+  void drawBG(){
+    noStroke();
+    fill(230);
+
+    int timer = millis();
+    float cursor = timer * speed*3;
+    int size = 20;
+
+    for(int x=-(int)(cursor % size*2); x<width; x+=size*2){
+      rect(x, 0, size, height);
+    }
+  }
 }
