@@ -38,9 +38,6 @@ class RouterVisual extends Visual{
   }
 
   void draw(){
-    stroke(0);
-    noFill();
-
     // clear screen
     background(255);
     
@@ -61,7 +58,7 @@ class RouterVisual extends Visual{
     }
 
     void init(){
-      init(width, (int)random(height), (int)random(10, 30));
+      init(width, (int)random(height), (int)random(8, 12));
     }
     
     void init(int _x, int _y, int _size){
@@ -72,6 +69,24 @@ class RouterVisual extends Visual{
 
     Dot clone(){
       return new Dot(x, y, size);
+    }
+    
+    void draw(){
+      noStroke();
+      fill(0);
+
+      ellipse(x, y, size, size);
+//        int dotSize = 0;
+//        if(dot.x < width - 100)
+//          dotSize = 20;
+//        else if(dot.x < width){
+//         dotSize = (int)map(dot.x, width-100, width, 0, 100);
+//        }
+//       
+//       if(dotSize > 0){
+//         ellipse(dot.x, dot.y, dotSize, dotSize);
+//       } 
+//      }
     }
   }
  
@@ -91,22 +106,17 @@ class RouterVisual extends Visual{
     }
     
     void draw(){
+      stroke(0);
+       noFill();
+
       for(int i=dots.size()-1; i>0; i--){
         Dot dot = dots.get(i);
-
         line(dot.x, dot.y, dots.get(i-1).x, dots.get(i-1).y);
-        
-        int dotSize = 0;
-        if(dot.x < width - 100)
-          dotSize = 20;
-        else if(dot.x < width){
-         dotSize = (int)map(dot.x, width-100, width, 0, 100);
-        }
-       
-       if(dotSize > 0){
-         dotSize = (int)(dotSize*0.5);
-          ellipse(dot.x-dotSize, dot.y-dotSize, dot.x+dotSize, dot.y+dotSize);
-       } 
+      }
+
+      for(int i=dots.size()-1; i>=0; i--){
+        Dot dot = dots.get(i);
+        dot.draw();
       }
     }
     
