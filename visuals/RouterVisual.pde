@@ -12,7 +12,7 @@ class RouterVisual extends Visual{
   // can be called at any moment in time
   void init(){
     init(
-      3, // count
+      30, // count
       10 // speed
     );
   }
@@ -86,15 +86,27 @@ class RouterVisual extends Visual{
     void init(){
       dots = new ArrayList<Dot>();
       for(int x=0; x < width*1.5; x+=random(width*0.3, width*0.7)){
-        Dot d = new Dot();
-        d.x = x;
-        dots.add(d);
+        addDot(x);
       }
     }
     
     void draw(){
       for(int i=dots.size()-1; i>0; i--){
-        line(dots.get(i).x, dots.get(i).y, dots.get(i-1).x, dots.get(i-1).y);
+        Dot dot = dots.get(i);
+
+        line(dot.x, dot.y, dots.get(i-1).x, dots.get(i-1).y);
+        
+        int dotSize = 0;
+        if(dot.x < width - 100)
+          dotSize = 20;
+        else if(dot.x < width){
+         dotSize = (int)map(dot.x, width-100, width, 0, 100);
+        }
+       
+       if(dotSize > 0){
+         dotSize = (int)(dotSize*0.5);
+          ellipse(dot.x-dotSize, dot.y-dotSize, dot.x+dotSize, dot.y+dotSize);
+       } 
       }
     }
     
@@ -105,9 +117,7 @@ class RouterVisual extends Visual{
       
       // need a new dot at the end
       if(dots.get(dots.size()-1).x < width){
-        Dot d = new Dot();
-        d.x = width + (int)random(width*0.5);
-        dots.add(d);
+        addDot(width + (int)random(width*0.5));
       }
 
       // need to remove the first dot(s)
@@ -116,6 +126,19 @@ class RouterVisual extends Visual{
           dots.remove(i);
         }
       }
+    }
+    
+    void addDot(int x){
+      Dot d = new Dot();
+      d.x = x;
+      int prevY = 0;
+      if(dots.size() > 0){
+       prevY = dots.get(dots.size()-1).y;
+      } else {
+       prevY = (int)(random(height));
+      }
+      d.y = (int)(prevY + sin(random(TWO_PI))*height*0.1);
+      dots.add(d);
     }
   }
 }
