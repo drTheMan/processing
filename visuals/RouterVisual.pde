@@ -12,8 +12,8 @@ class RouterVisual extends Visual{
   // can be called at any moment in time
   void init(){
     init(
-      30, // count
-      10 // speed
+      15, // count
+      7 // speed
     );
   }
 
@@ -37,12 +37,23 @@ class RouterVisual extends Visual{
     }
   }
 
+
   void draw(){
     // clear screen
     background(255);
+
+    stroke(0);
+    noFill();
     
     for(int i=lines.size()-1; i>=0; i--){
-      lines.get(i).draw();
+      lines.get(i).drawLines();
+    }
+    
+    noStroke();
+    fill(0);
+
+    for(int i=lines.size()-1; i>=0; i--){
+      lines.get(i).drawDots();
     }
   }
   
@@ -72,21 +83,8 @@ class RouterVisual extends Visual{
     }
     
     void draw(){
-      noStroke();
-      fill(0);
-
-      ellipse(x, y, size, size);
-//        int dotSize = 0;
-//        if(dot.x < width - 100)
-//          dotSize = 20;
-//        else if(dot.x < width){
-//         dotSize = (int)map(dot.x, width-100, width, 0, 100);
-//        }
-//       
-//       if(dotSize > 0){
-//         ellipse(dot.x, dot.y, dotSize, dotSize);
-//       } 
-//      }
+      int s = (int)(sin(map(x, 0, width, 0, PI))*size);
+      ellipse(x, y, s,s);
     }
   }
  
@@ -106,14 +104,18 @@ class RouterVisual extends Visual{
     }
     
     void draw(){
-      stroke(0);
-       noFill();
+      drawLines();
+      drawDots();
+    }
 
+    void drawLines(){
       for(int i=dots.size()-1; i>0; i--){
         Dot dot = dots.get(i);
         line(dot.x, dot.y, dots.get(i-1).x, dots.get(i-1).y);
       }
+    }
 
+    void drawDots(){
       for(int i=dots.size()-1; i>=0; i--){
         Dot dot = dots.get(i);
         dot.draw();
