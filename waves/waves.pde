@@ -1,10 +1,13 @@
 
-
+import g4p_controls.*;
+ 
+  
 int pcount = 10;
 float cx,cy;
 PVector[] points;
 
 float seed;
+
 void setup(){
   size(1000,800);
   // color(0);
@@ -12,7 +15,8 @@ void setup(){
   noFill();
   
   points = new PVector[pcount];
-  seed = 0;
+  seed = random(600);
+  setupControls();
 }
 
 void update(){
@@ -23,22 +27,23 @@ void update(){
 
 void draw(){
   update();
- 
+
   background(255);
+  
 
   for(int i=0; i<pcount; i++){
-    points[i] = new PVector(i * 110, noise(seed+i*10)*20);
+    points[i] = new PVector(i * sdr3.getValueF() + (noise(seed + 40000 + i * 30)-0.5) * sdr4.getValueF() , (noise(seed+i*10)-0.5)*20);
   }
 
   cx = 0; //width/2;
-  cy = 0; //height/2;
+  cy = 50; //height/2;
 
-  for(int l=0; l<300; l++){
+  for(int l=0; l<sdr2.getValueI(); l++){
 
-    for(int i=0; i<pcount; i++){
-      points[i].y += noise(seed+1000+l*300+i*10) * 3.5;
-    }
-  
+//    for(int i=0; i<pcount; i++){
+//      points[i].y += noise(seed+1000+l*300+i*10) * 15;
+//    }
+//  
     beginShape();
     for(int i=0; i<pcount; i++){
       curveVertex(cx+points[i].x, cy+points[i].y); 
@@ -46,7 +51,51 @@ void draw(){
     endShape();
     
     // cx += 1;
-    cy += 1;
+    cy += sdr1.getValueF();
   }
 }
+
+void keyPressed() {
+  if(key == 'c'){
+    sdr1.setVisible(!sdr1.isVisible());
+    sdr2.setVisible(!sdr2.isVisible());
+    sdr3.setVisible(!sdr3.isVisible());
+    sdr4.setVisible(!sdr4.isVisible());
+//    sdr5.setVisible(!sdr5.isVisible());
+//    sdr6.setVisible(!sdr6.isVisible());
+//    sdr7.setVisible(!sdr7.isVisible());
+//    sdr8.setVisible(!sdr8.isVisible());
+//    sdr9.setVisible(!sdr9.isVisible());
+  }
+}
+
+int sliderCount=0;
+GCustomSlider sdr1, sdr2, sdr3, sdr4,sdr5,sdr6,sdr7,sdr8,sdr9;
+
+void setupControls(){
+  sdr1 = newSlider();
+  sdr2 = newSlider();
+  sdr2.setNumberFormat(GCustomSlider.INTEGER);
+  sdr2.setLimits(100, 1, 500);
+  sdr3 = newSlider();
+  sdr3.setLimits(100, 0, 500);  
+  sdr4 = newSlider();
+  sdr4.setLimits(10, 0, 1000);
+  
+}
+
+GCustomSlider newSlider(){
+   //new GCustomSlider(this, 0, 0, 260, 80, null);
+  GCustomSlider sdr = new GCustomSlider(this, 0, sliderCount*40, 260, 80, null);
+  // show          opaque  ticks value limits
+  sdr.setShowDecor(false, true, true, false);
+  sdr.setNumberFormat(GCustomSlider.DECIMAL, 2);
+  sdr.setLimits(5.0f, 0f, 20.0f);
+  sdr.setNbrTicks(6);
+  // sdr.setStickToTicks(true);  //false by default
+  sliderCount++;
+  return sdr;
+}
+
+
   
