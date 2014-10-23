@@ -20,7 +20,7 @@ void setup(){
 }
 
 void update(){
-  seed += 0.01;
+  // seed += 0.01;
   randomSeed((int)seed);
 }
 
@@ -30,9 +30,10 @@ void draw(){
 
   background(255);
   
+  seed = sdr5.getValueF() + sdr6.getValueF() * millis();
 
   for(int i=0; i<pcount; i++){
-    points[i] = new PVector(i * sdr3.getValueF() + (noise(seed + 40000 + i * 30)-0.5) * sdr4.getValueF() , (noise(seed+i*10)-0.5)*20);
+    points[i] = new PVector(i * sdr3.getValueF() + (noise(seed + 40000 + i * 30)-0.46) * sdr4.getValueF() , (noise(seed+i*10)-0.46)*20);
   }
 
   cx = 0; //width/2;
@@ -40,9 +41,10 @@ void draw(){
 
   for(int l=0; l<sdr2.getValueI(); l++){
 
-//    for(int i=0; i<pcount; i++){
-//      points[i].y += noise(seed+1000+l*300+i*10) * 15;
-//    }
+    for(int i=0; i<pcount; i++){
+      points[i].x += (noise(seed+1000+l*300+i*10)-0.46) * sdr8.getValueF();
+      points[i].y += (noise(seed+1000+l*300+i*10)-0.46) * sdr7.getValueF();
+    }
 //  
     beginShape();
     for(int i=0; i<pcount; i++){
@@ -61,10 +63,10 @@ void keyPressed() {
     sdr2.setVisible(!sdr2.isVisible());
     sdr3.setVisible(!sdr3.isVisible());
     sdr4.setVisible(!sdr4.isVisible());
-//    sdr5.setVisible(!sdr5.isVisible());
-//    sdr6.setVisible(!sdr6.isVisible());
-//    sdr7.setVisible(!sdr7.isVisible());
-//    sdr8.setVisible(!sdr8.isVisible());
+    sdr5.setVisible(!sdr5.isVisible());
+    sdr6.setVisible(!sdr6.isVisible());
+    sdr7.setVisible(!sdr7.isVisible());
+    sdr8.setVisible(!sdr8.isVisible());
 //    sdr9.setVisible(!sdr9.isVisible());
   }
 }
@@ -81,7 +83,15 @@ void setupControls(){
   sdr3.setLimits(100, 0, 500);  
   sdr4 = newSlider();
   sdr4.setLimits(10, 0, 1000);
-  
+  sdr5 = newSlider();
+  sdr5.setLimits(0, -1000, 1000);
+  sdr6 = newSlider();
+  sdr6.setLimits(0.001, 0, 0.01);    
+  sdr7 = newSlider();
+  sdr7.setLimits(5, 0, 100);    
+  sdr8 = newSlider();
+  sdr8.setLimits(0, 0, 100);    
+
 }
 
 GCustomSlider newSlider(){
