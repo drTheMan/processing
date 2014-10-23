@@ -1,3 +1,5 @@
+
+
 int pcount = 10;
 float cx,cy;
 PVector[] points;
@@ -14,7 +16,7 @@ void setup(){
 }
 
 void update(){
-  seed += 0.1;
+  seed += 0.01;
   randomSeed((int)seed);
 }
 
@@ -25,16 +27,16 @@ void draw(){
   background(255);
 
   for(int i=0; i<pcount; i++){
-    points[i] = new PVector(i * 110, sin(i*0.5+random(2.5)) * 20);
+    points[i] = new PVector(i * 110, noise(seed+i*10)*20);
   }
-  
+
   cx = 0; //width/2;
   cy = 0; //height/2;
 
   for(int l=0; l<300; l++){
-    
+
     for(int i=0; i<pcount; i++){
-      points[i].y += random(3.5);
+      points[i].y += noise(seed+1000+l*300+i*10) * 3.5;
     }
   
     beginShape();
