@@ -5,6 +5,7 @@
 uniform sampler2D tex0;
 uniform float radius;
 uniform float time;
+uniform float waviness;
 
 // uniform sampler2D tex1;
 // uniform sampler2D tex2;
@@ -20,9 +21,11 @@ void main(void) {
   vec2 offset = p - center;
   float dist = sqrt(dot(offset,offset));
 
+  float x_sin = sin(waviness*10.0+p.x*30.0);
+  float y_sin = sin(waviness*5.0+1.2+p.y*25.0);
   float wave_sin = sin(time*3.0);
-  float wave_size = 0.01;
-  float waved_radius = radius + wave_sin * wave_size;
+
+  float waved_radius = radius + wave_sin * x_sin * y_sin * waviness * 0.1;
 
   vec4 colorFinal;
 

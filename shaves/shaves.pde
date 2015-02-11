@@ -36,7 +36,8 @@ void draw() {
 
   //mouseX
   shader.set("time", millis()/1000.0); // feed time to the PShader
-  shader.set("radius", ((float)mouseX) / (float)(width) * 0.5); // [0.0 ... 1.0] based on mouse's horizontal position
+  shader.set("waviness", 1.0 - ((float)mouseY) / (float)(height)); // [0.0 ... 1.0] based on mouse's vertical position
+  shader.set("radius", ((float)mouseX) / (float)(width) * 0.5); // [0.0 ... 0.5] based on mouse's horizontal position
 
   shader(shader); // apply the shader to subsequent textured geometry
   image(image, 0, 0, 800, 800); // display any image as a 'textured geometry canvas' for the PShader
