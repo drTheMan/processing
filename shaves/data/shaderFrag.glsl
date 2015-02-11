@@ -20,9 +20,13 @@ void main(void) {
   vec2 offset = p - center;
   float dist = sqrt(dot(offset,offset));
 
+  float wave_sin = sin(time*3.0);
+  float wave_size = 0.01;
+  float waved_radius = radius + wave_sin * wave_size;
+
   vec4 colorFinal;
 
-  if(dist > radius)
+  if(dist > waved_radius)
     colorFinal = texture2D(tex0, p); // simply take color from texture
   else
     colorFinal = vec4(1.0);

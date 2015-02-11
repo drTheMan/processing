@@ -35,16 +35,13 @@ void draw() {
   background(0); // black background
 
   //mouseX
-  shader.set("time", millis()/5000.0); // feed time to the PShader
+  shader.set("time", millis()/1000.0); // feed time to the PShader
   shader.set("radius", ((float)mouseX) / (float)(width) * 0.5); // [0.0 ... 1.0] based on mouse's horizontal position
+
   shader(shader); // apply the shader to subsequent textured geometry
   image(image, 0, 0, 800, 800); // display any image as a 'textured geometry canvas' for the PShader
 
   // write the fps and the current mixType (in words through some ?: trickery) in the top-left of the window
   frame.setTitle(" " + int(frameRate));
 }
-
-void mousePressed() {
-}
-
 
